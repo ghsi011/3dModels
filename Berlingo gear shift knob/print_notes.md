@@ -1,36 +1,50 @@
-# Berlingo gear shift knob — print & fit notes
+# Berlingo gear shift knob — print notes (rev3, rail-channel bore)
 
-## What's in the folder
-- `berlingo_gear_knob.FCStd` — the parametric FreeCAD model
-- `berlingo_knob_body.stl` — the knob body (print in black / colour A)
-- `berlingo_knob_pattern.stl` — the 5-speed gate pattern inlay (white / colour B)
-- `berlingo_knob.step` — both parts together, for other CAD
-- `render_iso.png`, `render_front.png`, `render_top.png` — previews
+## What changed rev2 → rev3
+Rev2 jammed 20 mm down: the 16.7 mm caliper reading was across **two rails** on the
+Ø12.9 shaft, not a solid collar. Rev3 models the rod itself (`RefRod`, hidden in the
+FCStd) and cuts a bore that matches every measured feature.
 
-## Geometry (bottom to top)
-- **Outer shape:** copied from the Amazon reference knob — 95 mm tall, Ø46 mm bulb, Ø30 mm base collar with a boot-grip groove near the bottom.
-- **Bore (from the bottom):** lead-in chamfer → **Ø17.4 × 32 mm counterbore** (clears the rod's measured Ø16.7 × 29.3 mm base collar) → **Ø13.2 main bore** (your Ø12.9 shaft + 0.3 mm clearance), **74 mm deep** (measured 72.1 mm exposed rod + 2 mm headroom). The rod's Ø6.5 tapered tip needs no special relief.
-- **Top:** flat Ø30 face with the 1-3-5 / 2-4-R gate recessed 0.6 mm. The pattern STL fills the recess exactly flush.
+## Bore geometry (from bottom / entry)
+- Entry chamfer → **Ø13.2 main bore**, 74 mm deep (shaft Ø12.9 + 0.3 clearance)
+- **Two rail channels**: 6.3 mm wide (rail 5.5 + 0.8), Ø17.4 envelope (rails 16.7 + 0.7),
+  47 mm deep (rails end at 42.8 + margin). Opposed, along the knob's X axis.
+- **Annular button groove**: Ø18, depth band 45–55 mm — works at any angle, so the clip
+  button (Ø8.2, center 47.5 above boot) clears and clicks in regardless of its
+  orientation relative to the rails. Button pops out fully if it protrudes ≤1.5 mm;
+  prouder buttons stay slightly sprung = extra retention. Never a jam.
 
-## Two-colour printing
-- **Easiest (X2D):** import the single file `berlingo_knob_2color.3mf` — it loads as one object with two parts. Assign white to *ShiftPattern*, black to *KnobBody*. With the X2D's dual nozzle each colour gets its own nozzle: no purge waste, no grey-tinged white.
-- Alternative: load both STLs together as one object with two parts, or import `berlingo_knob.step` and choose "single object with multiple parts".
-- **Single-colour fallback:** print the body alone; the recess reads fine as plain engraving.
+## Verification (Phase 4, passed)
+- Seated interference: 0 except 3.4 mm³ at the modeled button-tip corners (= 0.6 mm
+  spring compression; intended click retention)
+- Insertion sweep (7 positions, button depressed): 0.000 mm³ everywhere
+- Measurement audit: all 8 measured values present in geometry (12.9 / 16.7 / 5.5 /
+  72.1 / 42.8 / 6.5 tip / 8.2 btn @47.5 / 46-95-30 outer)
+- Cylindrical radii in part: 6.6, 8.7, 9.0, 15.0 ✓
 
-## Changing dimensions
-Open the FCStd in FreeCAD and edit the **Params** spreadsheet (double-click it in the tree). Every number updates on recompute:
+## Params → fit fixes (Params spreadsheet in FCStd)
+| symptom | cell to change |
+|---|---|
+| shaft too tight/loose | `fit_clr` (0.3) |
+| rails bind in channels | `rail_clr` (0.8) or `collar_clr` (0.7) |
+| button doesn't click | `btn_groove_d` (18) / `btn_groove_z` (45) |
+| knob sits too high | `bore_depth` (74) |
 
-- `fit_clr` — press-fit tightness on the shaft. Increase to 0.4–0.5 if too tight, decrease to 0.2 if sloppy.
-- `collar_clr` — same idea for the counterbore.
-- `bore_depth` (74) / `collar_depth` (32) — set from the measured rod: 72.1 mm exposed, 29.3 mm collar. Re-measure if the boot or rod ever changes.
+## PRINT THE COUPON FIRST
+`berlingo_fit_coupon.stl` — 22 mm ring slice of the actual bore (rail-channel ends +
+button groove + shaft bore). ~15 min in PLA, slide it down the rod: it must pass the
+rails, click on the button, and seat without wobble. Adjust Params, re-export, only
+then print the full knob.
 
-After editing, re-export: select **KnobBody** → File → Export → STL (and **PatternInlay** separately if using two colours).
+## Slicing (Bambu X2D)
+- File: `berlingo_knob_2color.3mf` — one object, assign KnobBody→black (main nozzle),
+  ShiftPattern→white (auxiliary). Grouping mode **Custom**, check assignment preview.
+- Orientation: **UPSIDE DOWN** (top face on plate) — color layers 1–3, tiny prime tower,
+  sharp pattern. Elephant-foot compensation ≥0.15.
+- Material: **ASA** for the final (parked-car temps kill PLA): 240–255 °C, bed 90–100,
+  Heat Mode 60–65, fan 0, dry 4–6 h @80. PLA only for the coupon/fit test.
 
-## Printing
-- **Orientation: UPSIDE DOWN** — pattern face on the plate, bore opening up. This keeps the prime tower 3 layers tall (the two-colour layers are layers 1–3 instead of at 95 mm), removes all internal bridging in the bore (the hole only widens going up), gives a full Ø30 first-layer contact patch, and prints the pattern face razor-sharp against the plate. Layer direction (strength) is identical either way. Watch first-layer squish: keep elephant-foot compensation ≥ 0.15 so the white digits don't fatten into the black. No supports in either orientation.
-- **Material:** PETG minimum, **ASA/ABS preferred** — a black knob in a parked car in summer gets hot enough to soften PLA.
-- **Walls/infill:** 4 perimeters, 25–40 % gyroid. 100 % not needed — the part is nearly solid at the neck anyway.
-- **Fit:** push on by hand with a twist; warming the knob (hair dryer, not heat gun) helps. If it ever works loose, a drop of epoxy in the bore is permanent.
-
-## Honest note
-The press fit relies on the white plastic rod being in decent shape. Since the old knob broke off it, check the rod for cracks before pressing hard — if it's chewed up, a bead of epoxy inside the bore turns this into a glue-on knob, which is just as usable (but removal becomes destructive).
+## Honest risks
+- Rail width read 5.5 from caliper photo — if snug, +0.2 on `rail_clr` fixes it.
+- Button protrusion unmeasured; annular groove design tolerates any value.
+- Two possible seatings (180° apart) — install with the pattern facing the driver.
