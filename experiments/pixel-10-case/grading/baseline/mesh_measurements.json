@@ -1,0 +1,117 @@
+{
+  "command": "python experiments/pixel-10-case/grading/baseline/measure_meshes.py",
+  "mesh_reimports": {
+    "monolith": {
+      "path": "C:\\github\\3D\\.claude\\worktrees\\3d-modeling-multi-agent-split-fd66c0\\experiments\\pixel-10-case\\arms\\monolith\\pixel10_case.stl",
+      "sha256": "211e8f29b5c1ca0c85e5edb4ab8b497feb4f02ec4758c228b73e826ec84b2553",
+      "bytes": 102084,
+      "bounds_mm": [
+        [
+          -38.1,
+          -78.5,
+          -0.0
+        ],
+        [
+          38.1,
+          78.5,
+          11.25
+        ]
+      ],
+      "extents_mm": [
+        76.2,
+        157.0,
+        11.25
+      ],
+      "faces": 2040,
+      "vertices": 1020,
+      "components": 1,
+      "watertight": true,
+      "winding_consistent": true,
+      "euler_number": 0,
+      "volume_mm3": 21962.996,
+      "area_mm2": 27764.387
+    },
+    "team": {
+      "path": "C:\\github\\3D\\.claude\\worktrees\\3d-modeling-multi-agent-split-fd66c0\\experiments\\pixel-10-case\\arms\\team\\pixel10_case_cq_a.stl",
+      "sha256": "71b02364941f10cf1d6f097ecdae677f8cfc550c34af393f1355dc3283d7fa44",
+      "bytes": 115084,
+      "bounds_mm": [
+        [
+          -37.95,
+          -156.7,
+          0.0
+        ],
+        [
+          37.95,
+          -0.3827,
+          11.9
+        ]
+      ],
+      "extents_mm": [
+        75.9,
+        156.3173,
+        11.9
+      ],
+      "faces": 2300,
+      "vertices": 1148,
+      "components": 1,
+      "watertight": true,
+      "winding_consistent": true,
+      "euler_number": -2,
+      "volume_mm3": 18921.621,
+      "area_mm2": 25914.547
+    },
+    "hidden_reference": {
+      "path": "C:\\Users\\ghsi0\\AppData\\Local\\Temp\\pixel10-reference.ZNSPlu\\Pixel10.stl",
+      "sha256": "8ddc8c882a751c96e3b4a2219bfe67ee4a9105696a3537f537774fc218922dc3",
+      "bytes": 1832884,
+      "bounds_mm": [
+        [
+          88.7708,
+          28.6004,
+          0.0006
+        ],
+        [
+          161.2292,
+          181.3996,
+          12.004
+        ]
+      ],
+      "extents_mm": [
+        72.4584,
+        152.7991,
+        12.0034
+      ],
+      "faces": 36656,
+      "vertices": 18330,
+      "components": 4,
+      "watertight": true,
+      "winding_consistent": true,
+      "euler_number": 2,
+      "volume_mm3": 97319.024,
+      "area_mm2": 28091.256
+    }
+  },
+  "artifact_inventory": {
+    "monolith": {
+      "python_files": 2,
+      "python_bytes": 8663,
+      "python_lines": 181,
+      "delivered_file_count": 16,
+      "delivered_bytes": 994955
+    },
+    "team": {
+      "python_files": 8,
+      "python_bytes": 32479,
+      "python_lines": 782,
+      "delivered_file_count": 87,
+      "delivered_bytes": 4136632
+    }
+  },
+  "official_body_dimensions_mm": [
+    72.0,
+    152.8,
+    8.6
+  ],
+  "hidden_reference_limitations": "Unverified community mesh used only as one grading reference; reconciled against official overall body dimensions, not treated as absolute truth."
+}

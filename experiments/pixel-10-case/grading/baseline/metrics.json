@@ -1,0 +1,73 @@
+{
+  "scope": "Independent artifact grade of frozen c02d1d8 arms",
+  "winner": "team",
+  "rubric_maximums": {
+    "hard_success_installability_export_integrity": 20,
+    "dimensional_reference_correctness": 25,
+    "protective_functional_design": 15,
+    "fdm_printability_process_plan": 20,
+    "independent_verification_visual_evidence": 15,
+    "artifact_completeness_parametric_maintainability": 5
+  },
+  "arms": {
+    "monolith": {
+      "status": "PASS; no hard cap",
+      "scores": {
+        "hard_success_installability_export_integrity": 19,
+        "dimensional_reference_correctness": 14,
+        "protective_functional_design": 7,
+        "fdm_printability_process_plan": 13,
+        "independent_verification_visual_evidence": 5,
+        "artifact_completeness_parametric_maintainability": 4,
+        "total": 62
+      },
+      "final_stl": "arms/monolith/pixel10_case.stl",
+      "stl_sha256": "211e8f29b5c1ca0c85e5edb4ab8b497feb4f02ec4758c228b73e826ec84b2553",
+      "stl_reimport": {"watertight": true, "components": 1, "extents_mm": [76.2, 157.0, 11.25], "volume_mm3": 21962.996},
+      "step_reimport": {"valid": true, "volume_mm3": 21963.765},
+      "final_delivered_files_excluding_pycache": 16,
+      "final_delivered_bytes_excluding_pycache": 994955,
+      "python_source": {"files": 2, "lines": 181, "bytes": 8663},
+      "elapsed": "8m 48s",
+      "critical_path": "8m 48s (single arm; inferred from its start/end ledger)",
+      "rejections": "No formal rejection ledger; one failed unsupported-downface audit is recorded before final correction.",
+      "tokens": "not exposed",
+      "auditable_proxies": {"logged_role_instances": 1}
+    },
+    "team": {
+      "status": "PASS; no hard cap",
+      "scores": {
+        "hard_success_installability_export_integrity": 20,
+        "dimensional_reference_correctness": 21,
+        "protective_functional_design": 13,
+        "fdm_printability_process_plan": 18,
+        "independent_verification_visual_evidence": 14,
+        "artifact_completeness_parametric_maintainability": 5,
+        "total": 91
+      },
+      "final_stl": "arms/team/pixel10_case_cq_a.stl",
+      "stl_sha256": "71b02364941f10cf1d6f097ecdae677f8cfc550c34af393f1355dc3283d7fa44",
+      "stl_reimport": {"watertight": true, "components": 1, "extents_mm": [75.9, 156.3173, 11.9], "volume_mm3": 18921.621},
+      "step_reimport": {"valid": true, "volume_mm3": 18921.937},
+      "final_delivered_files_excluding_pycache": 87,
+      "final_delivered_bytes_excluding_pycache": 4136632,
+      "python_source": {"files": 8, "lines": 782, "bytes": 32479},
+      "elapsed": "1h 11m 22s",
+      "critical_path": "1h 11m 22s (serial gated pipeline)",
+      "rejections": 3,
+      "tokens": "not exposed",
+      "auditable_proxies": {"logged_role_instances": 15}
+    }
+  },
+  "hidden_reference": {
+    "path_outside_repository": "C:\\Users\\ghsi0\\AppData\\Local\\Temp\\pixel10-reference.ZNSPlu\\Pixel10.stl",
+    "sha256": "8ddc8c882a751c96e3b4a2219bfe67ee4a9105696a3537f537774fc218922dc3",
+    "reimport_extents_mm": [72.4584, 152.7991, 12.0034],
+    "official_body_dimensions_mm": [72.0, 152.8, 8.6],
+    "limitation": "Community model is unverified. Its 12.0034 mm depth differs from the official 8.6 mm body depth by 3.4034 mm, plausibly because the mesh includes camera projection; it is not absolute ground truth."
+  },
+  "commands": [
+    "python experiments\\pixel-10-case\\grading\\baseline\\measure_meshes.py",
+    "python -c \"import cadquery as cq; ... cq.importers.importStep(...) ...\""
+  ]
+}
