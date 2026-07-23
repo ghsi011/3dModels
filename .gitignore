@@ -1,3 +1,10 @@
 *.FCBak
 *.FCStd1
 *.gcode
+
+# redundant (unzipped alongside)
+tests/renders_gallery.zip
+
+# python / freecad cruft
+__pycache__/
+*.pyc
