@@ -196,3 +196,27 @@ stressful with gloves.
   joint minimization), nut ant-skirt, rescue ridges, transport plug doubling as the §3.2
   bee-tight cap, gasket-crush thread positioning (ISBT-style seat-before-bottom), and the
   bottle adapter above (user-requested during review).
+
+---
+
+## Addendum (2026-07-24): headspace measured 6–10 mm → drip-barrel pivot
+
+The original brief assumed ≥35 mm headspace under the ceiling (flagged as UNMEASURED).
+Field measurement: **6–10 mm** between frame top bars and ceiling. The Ø150 pool tray
+(17.4 mm tall + bee gap) cannot fit → the pool-tray `body` is shelved for this hive
+(kept for taller hives) and the primary prototype is the **`drip_barrel`**:
+
+- Same top end (PCO-1881 socket, Ø40 2-start clamp thread, same nut / plug / adapter /
+  gaskets / Ø44 drill). Monolithic — no joints below the roof (§1.3-safe).
+- Bottom closed by an **integral orifice plate at the ceiling plane**: 4 × Ø1.2 mm
+  holes through 3.0 mm (pail-feeder regulation: vacuum + surface tension hold the
+  syrup; bees withdraw it at the holes; air enters as bubbles only as syrup is drawn).
+- **Slow-drip sizing** (user requirement): vs the adapter's 5 × Ø1.5 × 2.2 plate,
+  Poiseuille scaling (n·d⁴/L) gives ~4× slower thermal push-out, and Ø1.2 raises the
+  capillary hold from ~26 mm to ~32 mm of syrup head.
+- Below the ceiling only 5 mm: 4 bearing spokes (r11→30) press the ceiling around the
+  Ø44 hole; 4 open windows between them give bees walk-in access to the Ø20 feeding
+  mouth (37° flare, plate ≤3 mm deep — well within proboscis reach).
+- Source: `feeder_dripbarrel.FCStd` (per-part FreeCAD doc workflow); STL verified in
+  `verify.py` (voids/solids probes, 3.0 mm plate ray, overhang audit 22.5% ≤ 25%
+  documented as thread flanks + deliberate bridges).

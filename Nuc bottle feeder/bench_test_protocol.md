@@ -48,6 +48,18 @@ rim), plug goes in/out with gloves on.
    repeat identically (glugs, then quiet at the pool line).
 4. Unscrew it again mid-flow — the gate must re-lock after the barrel column drains.
 
+## 4c. Drip-barrel test (15 min — replaces tests 1–3 for the drip variant)
+
+1. Clamp the drip barrel in a board with a Ø44 hole, plate facing down over a bowl.
+2. Screw in a full bottle (via adapter or bare). **Expect:** a short dribble from the
+   4 × Ø1.2 holes (a few ml while vacuum forms), then complete stop within ~10 s.
+3. **Slow-drip check:** hold 10 min — no further drips. A hanging meniscus at the holes
+   is normal; falling drops are not. FAIL = holes oversize or an air leak up top.
+4. Touch a fingertip (or paper towel corner) to a hole — syrup should wick out onto it,
+   then stop when removed. This is how the bees drink.
+5. Thermal push-out: hair-dryer the bottle on low from 30 cm, 5 min. Expect a few drops
+   to weep out (slow!), stopping when heating stops. A steady stream = FAIL.
+
 ## 5. Clamp extremes (once, with the printed parts)
 
 Clamp the feeder on 8 mm plywood and on a 30 mm stack: nut reaches firm hand-tight on

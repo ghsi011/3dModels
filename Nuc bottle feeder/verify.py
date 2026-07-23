@@ -65,7 +65,7 @@ def load(name, required=True):
 
 # ------------------------------------------------------------------ 1. meshes
 PARTS = ["body", "clamp_nut", "plug", "bottle_adapter", "gasket_tpu",
-         "coupon_socket", "coupon_nut_ring"]
+         "coupon_socket", "coupon_nut_ring", "drip_barrel"]
 meshes = {}
 for n in PARTS:
     m = load(n)
@@ -104,6 +104,35 @@ if body is not None:
     check("body: outer wall solid", bool(m_in[1]))
     check("body: bore is void on axis", not bool(m_in[2]))
 
+# -------------------------------------- 2b. drip barrel (6-10 mm headspace)
+# Exported with its lowest point (spoke/mouth underside) at z=0.
+# Local frame: ceiling plane at z=5.0, orifice plate z=2.1..5.1 (3 mm thick,
+# slow-drip), 4 x O1.2 holes at r=3.5, mouth flare below, 4 bee windows +
+# 4 bearing spokes 5 mm tall.
+db = meshes.get("drip_barrel")
+if db is not None:
+    a45 = math.radians(45)
+    void_pts = np.array([
+        [0, 0, db.bounds[1][2] - 2.0],                      # socket entry
+        [0, 0, 20.0],                                       # bore above plate
+        [3.5 * math.cos(a45), 3.5 * math.sin(a45), 3.6],    # orifice hole
+        [0, 0, 1.2],                                        # feeding mouth
+        [20 * math.cos(a45), 20 * math.sin(a45), 2.0],      # bee window
+    ])
+    v = db.contains(void_pts)
+    check("drip_barrel: syrup path + mouth + windows open (5 probes)",
+          not v.any(),
+          f"solid at {np.where(v)[0].tolist()}" if v.any() else "all clear")
+    mat_pts = np.array([
+        [0, 0, 3.6],        # plate center solid (no center hole - slow drip)
+        [25.0, 0, 2.0],     # bearing spoke
+        [9.6, 0, 1.6],      # core wall holding the plate
+    ])
+    m_in = db.contains(mat_pts)
+    check("drip_barrel: orifice plate solid at center", bool(m_in[0]))
+    check("drip_barrel: bearing spoke solid", bool(m_in[1]))
+    check("drip_barrel: core wall solid", bool(m_in[2]))
+
 # ------------------------------------------------- 3. adapter gate (if built)
 ad = meshes.get("bottle_adapter")
 if ad is not None:
@@ -135,8 +164,13 @@ OVERHANG_BUDGET = {  # % of total face area steeper than 50 deg facing down
     # need no support.  Their budgets reflect measured flank area (14.7% /
     # 15.7%) + 3% margin; any regression beyond that indicates a genuinely
     # new unsupported face.
+    # drip_barrel measured 22.5% total: 16.4% self-supporting thread flanks
+    # (full PCO socket + clamp thread on a small part — cf. coupon_socket
+    # 15.7%), 4.7% deliberate window-roof + O16.4 plate bridges, 1.3% the
+    # socket's gasket-seat bridged ring (same as body).  No supports needed.
     "body": 6.0, "clamp_nut": 18.0, "plug": 8.0, "bottle_adapter": 8.0,
     "gasket_tpu": 1.0, "coupon_socket": 19.0, "coupon_nut_ring": 8.0,
+    "drip_barrel": 25.0,
 }
 for n, m in meshes.items():
     nz = m.face_normals[:, 2]
@@ -174,11 +208,18 @@ if body is not None:
     check("body: outer wall >= 2.0 mm", t_wall >= 2.0, f"{t_wall:.2f} mm total radial")
     check("body: floor >= 2.0 mm", 2.0 <= t_floor, f"{t_floor:.2f} mm")
 
+if db is not None:
+    # slow-drip plate: vertical ray at plate center (hole-free) must be ~3 mm
+    t_plate = ray_thickness(db, [0.0, 0.0, -2.0], [0, 0, 1])
+    check("drip_barrel: plate >= 2.8 mm (slow drip)", t_plate >= 2.8,
+          f"{t_plate:.2f} mm at plate center")
+
 # ------------------------------------------------------------------ 6. renders
 try:
     from preview import render_view  # skill helper
     scene_parts = [(n, meshes[n]) for n in ("body", "clamp_nut", "plug",
-                                            "bottle_adapter") if n in meshes]
+                                            "bottle_adapter", "drip_barrel")
+                   if n in meshes]
     xoff = 0.0
     combo = []
     for n, m in scene_parts:

@@ -1,10 +1,25 @@
 # Assembly & field instructions — Nuc bottle feeder
 
+## Which through-roof unit? Measure your headspace first
+
+Two interchangeable through-roof units share the same nut, gaskets, plug and adapter:
+
+- **`drip_barrel`** — for **6–10 mm** frame-to-ceiling headspace (the current hive,
+  measured). Pail-feeder principle: an integral orifice plate (4 × Ø1.2 mm) sits at the
+  ceiling plane; vacuum + surface tension hold the syrup and the bees drink directly at
+  the holes. Only 5 mm protrudes below the ceiling (4 bearing spokes + a Ø20 feeding
+  mouth); bees walk in through 4 open windows between the spokes. Bee-tight even with
+  the bottle off (Ø1.2 holes). Zero moving parts, zero joints below the roof (§1.3).
+- **`body`** (pool tray) — needs **≥35 mm** headspace (tray 17.4 mm + bee gap). Keep for
+  taller hives.
+
+Install, clamp, bottle swap and adapter use are identical for both.
+
 ## Parts
 
-body (tray+barrel) · clamp nut · 2× TPU gasket washer · transport plug · **bottle adapter
-(cap-connector)** · 1 L PCO-1881 still-water bottle (the feeder fits any bottle with this
-neck — nearly every Israeli 0.5/1/1.5 L still bottle).
+body (tray+barrel) **or drip_barrel** · clamp nut · 2× TPU gasket washer · transport
+plug · **bottle adapter (cap-connector)** · 1 L PCO-1881 still-water bottle (the feeder
+fits any bottle with this neck — nearly every Israeli 0.5/1/1.5 L still bottle).
 
 The **bottle adapter** is a two-ended coupler, fully independent of the roof clamp:
 - **top**: a female PCO-1881 cap the bottle screws into (own TPU gasket inside),

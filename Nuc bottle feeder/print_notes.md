@@ -1,5 +1,22 @@
 # Print notes — Nuc bottle feeder (Bambu Lab X2D Combo)
 
+## Ready-to-print project file (PETG-CF)
+
+**`nuc_feeder_petgcf_x2d.3mf`** — fully configured Bambu Studio project: one plate with
+drip_barrel + clamp_nut + plug + bottle_adapter, all assigned **Bambu PETG-CF** on the
+MAIN nozzle, X2D 0.4 preset, 0.2 mm layers, **4 walls**, 30% gyroid, flow ×1.02
+(0.95→0.969), Textured PEI. Open → eyeball → slice; nothing to configure.
+Generated + self-verified by `make_feeder_3mf.py` (built from this machine's installed
+Studio 02.07.01.62 profiles). After import, glance at: filament = PETG-CF, walls = 4,
+infill = 30% gyroid, bed = Textured PEI.
+
+PETG-CF notes: needs hardened nozzle — both X2D nozzles qualify. It's dark (indigo
+spool), so the "white/light halves solar gain" advice is lost — **shade or foil-wrap the
+bottle/roof side in summer**. CF-filled walls can be microscopically rougher than plain
+PETG; the 4-wall + flow ×1.02 spec covers airtightness, but do run the 24 h leak test
+(bench protocol §2) before the hive install. TPU gaskets and PLA coupons print
+separately as below.
+
 ## Order of printing
 
 1. **`coupon_socket.stl`** (PLA is fine, ~15–20 min) — the real top 16 mm of the barrel.
@@ -18,7 +35,8 @@ If the bottle thread binds: raise `PCO_CLR_RADIAL` 0.32→0.40 and `PCO_CLR_AXIA
 
 | Part | Material | Orientation (as exported) | Walls | Infill | Notes |
 |---|---|---|---|---|---|
-| body | **PETG** (white/light!) | tray floor on bed, barrel up | **4** | 30% gyroid | ≥5 bottom layers; slight over-extrusion (flow ×1.02) for airtight walls; NO supports — cone is 45°, socket internals are vertical or bridged ring only |
+| body | **PETG** (white/light!) | tray floor on bed, barrel up | **4** | 30% gyroid | ≥5 bottom layers; slight over-extrusion (flow ×1.02) for airtight walls; NO supports — cone is 45°, socket internals are vertical or bridged ring only. **Pool-tray variant — needs ≥35 mm headspace; do NOT print for the current hive (measured 6–10 mm), print `drip_barrel` instead** |
+| drip_barrel | **PETG** (white/light!) | spokes/mouth on bed, barrel up — print as exported | **4** | 30% gyroid | flow ×1.02 (airtight walls); NO supports — bridges only: window roofs (~10–15 mm), Ø16.4 orifice-plate span, gasket-seat ring. Orifice holes are Ø1.2 × 3 mm (slow drip) — print slow (~40 mm/s) on the plate layers so they don't seal; clear with a 1.2 mm drill/needle if needed. ~2.5 h |
 | clamp_nut | PETG | exported upside-down (skirt flares up) — print as exported | 3 | 25% | no supports; skirt is 45° |
 | plug | PETG | disc on bed, stub up | 3 | 25% | |
 | bottle_adapter | PETG | stub (seal lip) on bed, cap opening up — print as exported | **4** | 30% | flow ×1.02 like the body — this part must be airtight; 45° cone under the disc, no supports |
