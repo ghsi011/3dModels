@@ -28,6 +28,17 @@ Tested support-interface winners per model material: materials.md §2 (short ver
 Support-for-ABS for most nylons/ASA/ABS/PC-ABS, but ASA for PA6-CF; PETG for TPU).
 Auto flow/motion/nozzle-offset calibration — trust it, but run offset cal with dry filament.
 
+**Material-by-region (dual-nozzle)**: when the 2-material boundary is a REGION (translucent
+base below, opaque body above), assign by cutting the mesh at the boundary plane into parts
+and giving each part a nozzle (scripts/make_bambu_3mf.py). Two physical nozzles = near-zero
+purge AND no cross-contamination — separate melt paths, unlike single-nozzle switching which
+purges and can bleed pigment into a clear material. Rule of thumb: showpiece + any
+abrasive/CF material on **main** (direct-drive, hardened), the less finish-critical material
+on **aux** (Bowden) — the optically-critical face is usually plate-formed anyway, so the
+aux's wavier finish lands where it doesn't cost you. Single-nozzle switching contaminates a
+clear material only if it shares a nozzle with an opaque and RETURNS to clear: make any such
+transition one-way, and expect a large purge into the clear direction.
+
 **Quirks**: dual-nozzle filament→nozzle assignment in Bambu Studio is buried — use
 grouping mode "Custom" and verify the assignment preview before slicing (can't reassign
 after; rearrange AMS slots instead). Ooze smearing the calibration pad = wet filament.

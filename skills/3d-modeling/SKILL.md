@@ -17,6 +17,7 @@ Read before acting (only what the task needs):
 - [references/materials.md](references/materials.md) — filament picks, drying temps, support-interface pairings
 - [references/troubleshooting.md](references/troubleshooting.md) — print-quality symptom → cause → fix, calibration order
 - [references/printers.md](references/printers.md) — the user's machine, before slicing advice
+- [references/bambu-3mf-authoring.md](references/bambu-3mf-authoring.md) — Phase 5 only: authoring a print-ready Bambu *project* 3MF (settings baked in, per-part filament), not bare geometry
 
 ## Phase 0 — Choose the backend
 
@@ -127,6 +128,11 @@ exported), per-part STLs (CadQuery: tolerance=0.01, angularTolerance=0.1), combi
 renders/previews, `print_notes.md` (geometry summary, which parameter fixes which fit,
 orientation + why, material + why, slicer settings, honest risks). Multi-color: run
 [scripts/make_3mf.py](scripts/make_3mf.py) → one 3MF, per-part filament assignment.
+For a **print-ready Bambu project 3MF** (settings baked in, not just geometry), use
+[scripts/make_bambu_3mf.py](scripts/make_bambu_3mf.py) and follow
+[references/bambu-3mf-authoring.md](references/bambu-3mf-authoring.md): round-trip the slicer
+for the machine's keys, verify structurally, ship an after-import checklist (you can't
+confirm the slicer accepts it without launching it).
 If the user keeps a print queue (ask once in Phase 1, or reuse what they've mentioned),
 update it now and on every design change; otherwise skip.
 

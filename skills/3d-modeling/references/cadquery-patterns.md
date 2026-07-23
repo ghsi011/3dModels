@@ -144,6 +144,28 @@ overhang_area = m.area_faces[down & (m.triangles_center[:, 2] > 0.3)].sum()
 print("unsupported overhang area mm2", overhang_area)  # ~0 for a support-free print
 ```
 
+## Extracting a chunk from a NON-watertight source mesh (scans, marching cubes)
+
+Do **not** chain `trimesh.slice_plane(cap=True)` to whittle a region out of a dirty mesh:
+capping a face with sub-micron float noise on nominally-flat faces, or with sliver
+triangles, leaves thousands of unshared edges — the result isn't a volume and the next
+boolean dies with `Not all meshes are volumes!`. Instead feed the raw face soup straight to
+`manifold3d` and take the region as ONE boolean intersection against a box:
+
+```python
+import trimesh
+src = trimesh.load("scan.stl", process=False)          # keep the raw faces as-is
+box = trimesh.creation.box(extents=(bx, by, bz))
+box.apply_translation((cx, cy, cz))                    # the chunk you want to keep
+chunk = trimesh.boolean.intersection([src, box], engine="manifold")
+```
+
+- **Dodge a noisy flat face**: cut a hair (~0.01 mm) ABOVE it, then translate the chunk back
+  down to z=0 — you get a genuinely planar face instead of inheriting the float noise.
+- **Self-touching marching-cubes surfaces**: fine in memory (the two sheets have distinct
+  vertex indices), but go non-manifold the instant a binary STL merges coincident vertices
+  on export. Nudge such vertices ~2 µm apart before writing the STL.
+
 ## Common shapes
 
 ```python
