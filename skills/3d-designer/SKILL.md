@@ -23,6 +23,8 @@ the contracts.
 - FreeCAD outputs: `.FCStd` with organized parameters and hidden mating reference, `verify.py`
   or verification macro, per-part STL, combined STEP, renders, and `print_notes.md`.
 - Multi-colour jobs also output the required single-file multi-body 3MF.
+- Candidate commissions also output `candidate_readiness.md` from the re-imported exported
+  STL. It is explicitly non-acceptance evidence.
 
 ## Required reading
 
@@ -33,7 +35,8 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
 3. Always: [`../3d-modeling/references/fdm-design.md`](../3d-modeling/references/fdm-design.md).
 4. Only when the part uses a standard mechanism:
    [`../3d-modeling/references/mechanisms.md`](../3d-modeling/references/mechanisms.md).
-5. [`../team-design.md`](../team-design.md): sections 2.3, 4, 7, and 9.
+5. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md):
+   `candidate_readiness.md` only.
 
 ## Checklist
 
@@ -49,11 +52,16 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
 5. Organize boolean operations robustly; preserve editable source; label bodies and exports.
 6. Generate deterministic exports from the source and render useful exterior, mating,
    section, and print-orientation views.
-7. Provide `verify.py` as useful designer evidence, but label it non-acceptance evidence.
-   Never claim the Phase-4 gate passed.
-8. Record source parameters, orientation, material assumptions, supports, weak directions,
+7. Before handoff, re-import the exported STL and keep iterating inside this commission
+   until the readiness receipt passes: intended body/integrity and bounds; seated
+   interference; full insertion/travel sweep; installed-coordinate section proving the
+   open/closed architecture; exact print-plan transform with named bed face at Z=0;
+   unsupported-roof and critical-wall floors; required source/STEP/renders and hashes.
+8. Provide `verify.py` and `candidate_readiness.md` as useful designer evidence, but mark
+   both `DESIGNER SELF-CHECK — NON-ACCEPTANCE`. Never claim the Phase-4 gate passed.
+9. Record source parameters, orientation, material assumptions, supports, weak directions,
    and coupon region in `print_notes.md`.
-9. When a verifier rejects, change only the owned geometry, regenerate every derived
+10. When a verifier rejects, change only the owned geometry, regenerate every derived
    artifact, and cite each resolved defect in the next handoff.
-10. Never run two FreeCAD designer instances concurrently. Separate CadQuery candidate
+11. Never run two FreeCAD designer instances concurrently. Separate CadQuery candidate
     folders may run in parallel and must not overwrite shared contracts.

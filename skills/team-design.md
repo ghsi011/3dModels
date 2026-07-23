@@ -102,6 +102,7 @@ on a vendor model name.
   dimensions.md
   print_plan.md
   verification_report.md
+  candidate_readiness.md
   print_notes.md
   evidence/
     input/                         # original photos and caliper images, immutable
@@ -1465,3 +1466,44 @@ assigned operational checklist and link back to shared references:
 - [x] Berlingo v4 dry run identifies the rev2 rail catch and T4 datum catch.
 - [x] T1-T4 team-versus-monolith evaluation is proposed but not run.
 - [x] Implementation began only after explicit user approval.
+
+## 15. Runtime optimization v2
+
+The first live Pixel 10 comparison preserved quality but exposed excessive serial cost:
+team `91/100` versus monolith `62/100`, at `71m22s` versus `8m48s`. The team caught three
+real defects: an incomplete camera datum sheet, a closed installation face, and a wrong
+model-to-printer orientation. The controls remain correct; the preventable work before
+those controls is optimized.
+
+Runtime v2 uses the compact schemas in
+[`3d-modeling/references/team-contracts-v2.md`](3d-modeling/references/team-contracts-v2.md).
+They retain the exact semantic fields in section 6 and all 53 ownership assignments while
+removing repeated prose from runtime contexts.
+
+The v2 changes are:
+
+1. **Blind-build completeness gate.** Before reference CAD, each visible feature has
+   count/function, relative layout/handedness, and a datum/bounded envelope or documented
+   shared-envelope response. This prevents spending a reference build to discover a missing
+   visible feature. It does not replace the blind build or visual overlay.
+2. **Designer readiness receipt.** Candidate CAD stays inside its own non-authoritative
+   loop until `candidate_readiness.md` proves, on the re-imported exported STL, integrity,
+   full insertion/travel, the intended section/open-face architecture, exact bed transform,
+   unsupported-roof limits, and required hashes/artifacts. It never grants acceptance.
+3. **Fresh verifier remains sacred.** Only after readiness does a new context independently
+   rerun all seven checks, inspect the images, and audit upstream contracts. Every changed
+   STL hash still requires a new fresh verifier.
+4. **File receipt drives progress.** The orchestrator advances when the required hash-bound
+   file exists and validates; chat completion prose is not a gate.
+5. **Compact evidence.** Use decisive crops/overlays and one multi-lane coupon by default.
+   Preserve source, exports, hashes, reports, and decisive failed visuals; avoid duplicate
+   previews and whole-image overlays.
+6. **Exact print transform.** `print_plan.md` names the model-to-printer transform, bed
+   landmark, bed normal, open direction, and forbidden downward faces so orientation is
+   testable before verifier dispatch.
+
+Pre-registered v2 Pixel targets are: final independent score at least `88/100`; one fresh
+verifier when the readiness gate works; no avoidable reference or candidate rejection;
+at most eight logged commissions; at most 35 minutes critical path; and at least 50% fewer
+contract/evidence files or bytes. Per-agent tokens remain reported only when the runtime
+exposes them; file bytes and commission count are proxies, never token estimates.

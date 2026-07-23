@@ -15,7 +15,7 @@ overlays, and issue a concrete file-contract verdict.
 
 - Inputs: original photos and measurements, `dimensions.md`, accepted reference artifacts,
   `print_plan.md`, candidate source only for traceability, exported STL/STEP/3MF, renders,
-  overlays, `verify.py` output, and `print_notes.md`.
+  overlays, `candidate_readiness.md`, `verify.py` output, and `print_notes.md`.
 - Write: `verification_report.md` using the exact template in
   [`../team-design.md`](../team-design.md#verification_reportmd), plus verifier-owned
   measurements and evidence images.
@@ -23,7 +23,8 @@ overlays, and issue a concrete file-contract verdict.
 
 ## Required reading
 
-1. [`../team-design.md`](../team-design.md): sections 2.4, 4.3, 7, and 9.
+1. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md):
+   `verification_report.md` only.
 2. [`../3d-modeling/references/cadquery-patterns.md`](../3d-modeling/references/cadquery-patterns.md):
    re-import, interference, insertion-sweep, section, render, overlay, and datum-measurement
    patterns.
@@ -33,27 +34,28 @@ overlays, and issue a concrete file-contract verdict.
 5. Shared tools:
    [`../../experiments/overlay_photo.py`](../../experiments/overlay_photo.py) and
    [`../../experiments/verify_visual.py`](../../experiments/verify_visual.py).
-6. [`../../experiments/verification_postmortem.md`](../../experiments/verification_postmortem.md)
-   for self-verification and look-first failure modes.
 
 ## Checklist
 
 1. Confirm you did not author or edit the candidate and re-ground from files and photos.
-2. Audit upstream: independently compare `dimensions.md` values, named datums, provenance,
+2. Recompute candidate hashes and treat `candidate_readiness.md` as untrusted completeness
+   evidence only. It never passes a check on the verifier's behalf.
+3. Audit upstream: independently compare `dimensions.md` values, named datums, provenance,
    and feature inventory against the original evidence. Reject corrupted ground truth.
-3. Re-import the exported STL and use it, not the in-memory source, for all geometric checks.
-4. Run all seven checks: interference; full-travel insertion sweep; section render; visual
+4. Re-import the exported STL and use it, not the in-memory source, for all geometric checks.
+5. Run all seven checks: interference; full-travel insertion sweep; section render; visual
    side-by-side; feature positions from named datums; measurement audit; printability and
    face audit.
-5. Actually inspect renders and overlay composites. Do not replace visual evidence with
+6. Actually inspect renders and overlay composites. Do not replace visual evidence with
    bounding-box or scalar checks; note occluded or misleading views.
-6. Audit against `print_plan.md`: planned orientation, overhangs/support budget,
+7. Audit against `print_plan.md`: planned orientation, overhangs/support budget,
    wall/feature sizes versus the planned nozzle, bed chamfers, material/load direction, and
    colour/process constraints.
-7. Verify export completeness and consistency: STL/STEP/3MF identities, closed solids,
+8. Verify export completeness and consistency: STL/STEP/3MF identities, closed solids,
    intended bodies, units, and no missing or stray components.
-8. A `PASS` requires every applicable check to pass with evidence and no open critical
+9. A `PASS` requires every applicable check to pass with evidence and no open critical
    upstream question.
-9. A `REJECT` must identify defect, evidence path, expected versus observed value/appearance,
+10. A `REJECT` must identify defect, evidence path, expected versus observed value/appearance,
    named datum or print-plan rule, severity, and owning loop (`METROLOGY`, `PRINT_PLAN`, or
-   `CANDIDATE_BUILD`). Never prescribe an unverified geometry fix as acceptance.
+    `CANDIDATE_BUILD`). Never prescribe an unverified geometry fix as acceptance. Every
+    changed STL hash requires a new fresh verifier context and a full seven-check rerun.

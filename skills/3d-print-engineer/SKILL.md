@@ -25,7 +25,8 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
 
 ## Required reading
 
-1. [`../team-design.md`](../team-design.md): sections 2.5, 4.2, 7, and 9.
+1. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md):
+   `print_plan.md` only.
 2. [`../3d-modeling/references/fdm-design.md`](../3d-modeling/references/fdm-design.md).
 3. [`../3d-modeling/references/printers.md`](../3d-modeling/references/printers.md).
 4. [`../3d-modeling/references/materials.md`](../3d-modeling/references/materials.md).
@@ -40,13 +41,16 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
 
 1. Select printer, material, nozzle(s), layer height range, and single/dual-nozzle envelope.
 2. Set the planned orientation from loads, mating surfaces, visible faces, bridges,
-   overhangs, supports, and anisotropy.
+   overhangs, supports, and anisotropy. Record an exact model-to-printer transform, named
+   bed-contact landmark at Z=0, bed normal, insertion/open direction, and forbidden
+   downward faces.
 3. State minimum walls, pins, holes, gaps, embossed/debossed features, tolerance/shrink
    allowances, and load-path rules tied to the planned nozzle/material/profile.
 4. Set the support budget and forbidden support-contact faces; require bed-facing
    elephant-foot chamfers where fit geometry approaches the plate.
 5. Define multi-colour/body/nozzle constraints and purge/contamination risks.
 6. Define the fit coupon region and pass/fail measurements before the designer begins.
+   Default to one multi-lane coupon STL; add files only for physically disjoint interfaces.
 7. Record assumptions and approval state in `print_plan.md`; unresolved manufacturing
    blockers stop candidate design.
 
