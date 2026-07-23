@@ -3,7 +3,30 @@
 Guidance for AI agents working in this folder. (`CLAUDE.md` points here; this file is the
 single source of truth.)
 
-## The skill
+## Modeling entry points
+
+- Start every modeling or print-prep request by loading **`3d-orchestrator`**. It owns the
+  route and records the decision in `job_state.md`.
+- **Solo mode** runs the existing [`skills/3d-modeling/`](skills/3d-modeling/) monolith
+  unchanged. Use it only for a simple, single-part, non-fit-critical job with no recreated
+  mating geometry, no moving/multi-part interfaces, and no high-consequence DFM question.
+- **Team mode** uses the five slices in `skills/3d-orchestrator/`,
+  `skills/3d-metrologist/`, `skills/3d-designer/`, `skills/3d-verifier/`, and
+  `skills/3d-print-engineer/`. Use it when fit or named-datum accuracy matters, geometry is
+  reconstructed from photos, parts mate or move, the job is multi-part/multi-colour, DFM is
+  difficult, failure has safety/thermal/load consequences, or the user asks for independent
+  verification.
+- Invoke solo explicitly with `/3d-modeling`. Invoke the team with `/3d-orchestrator` or
+  “use the 3D team.” For normal new jobs, let the orchestrator decide.
+- Team agents communicate only through project contract files and source evidence, never
+  chat summaries. The required flow and templates are in
+  [`skills/team-design.md`](skills/team-design.md).
+- In Claude Code, keep orchestration in the main session or launch
+  `claude --agent 3d-orchestrator`; nested Claude subagents cannot spawn specialists. In
+  Codex, the root agent may dispatch the five slices directly. Runtime model selection is a
+  launcher concern; it does not change the file contracts.
+
+## The solo skill
 
 - **Use the `3d-modeling` skill** for any modeling or print-prep work here. A copy lives in
   this repo at [`skills/3d-modeling/`](skills/3d-modeling/) (browsable) and
@@ -29,6 +52,19 @@ single source of truth.)
   photo and iterate. Overlays catch millimetre errors that side-by-side viewing misses.
 - **Known products** (phone, battery, SBC, appliance part): web-search the official specs and
   look for existing 3D models before measuring — then still confirm with photos + calipers.
+
+## Team invariants
+
+- The metrologist owns all numbers and named datums in `dimensions.md`. The designer never
+  silently repairs or replaces ground truth.
+- The mating reference is built blind from `dimensions.md`; the metrologist then overlays it
+  on the photos. If it misses, revise the sheet and rebuild.
+- The print engineer issues `print_plan.md` before candidate design and returns after an
+  independent pass for coupon, slicing, print order, and field testing.
+- The designer and verifier must be different fresh contexts. The verifier must look at
+  renders/overlays and must run all seven Phase-4 checks on the exported STL re-imported.
+- Never run two FreeCAD designers concurrently. CadQuery candidate instances may run in
+  separate folders in parallel.
 
 ## Printer
 
