@@ -8,3 +8,6 @@ tests/renders_gallery.zip
 # python / freecad cruft
 __pycache__/
 *.pyc
+
+# large decimated STEP proxy (per-part STLs are authoritative)
+yacht/final_model.step
