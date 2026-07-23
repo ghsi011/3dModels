@@ -148,25 +148,80 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 # HELPERS
 # ============================================================================
 
-def helical_ridge(r_root, depth, w_root, w_crest, lead, wrap_deg,
-                  z0=0.0, phase_deg=0.0, embed=0.25):
-    """A single helical thread ridge solid (right-hand), axis +Z.
-    Profile is a symmetric trapezoid, embedded `embed` below r_root so booleans
-    fuse cleanly. Ridge centerline starts at angle phase_deg, height z0."""
-    height = lead * wrap_deg / 360.0
-    helix = cq.Wire.makeHelix(lead, height, r_root)
+MEM_LIMIT_GB = 6.0
+
+
+def check_mem():
+    """Abort the build long before OCC can take the machine down (it once ate
+    60 GB and crashed the PC). Windows-only fast path via psapi."""
+    import ctypes
+    import ctypes.wintypes as wt
+
+    class PMC(ctypes.Structure):
+        _fields_ = [("cb", wt.DWORD), ("PageFaultCount", wt.DWORD),
+                    ("PeakWorkingSetSize", ctypes.c_size_t),
+                    ("WorkingSetSize", ctypes.c_size_t),
+                    ("QuotaPeakPagedPoolUsage", ctypes.c_size_t),
+                    ("QuotaPagedPoolUsage", ctypes.c_size_t),
+                    ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t),
+                    ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
+                    ("PagefileUsage", ctypes.c_size_t),
+                    ("PeakPagefileUsage", ctypes.c_size_t)]
+
+    pmc = PMC()
+    pmc.cb = ctypes.sizeof(PMC)
+    if ctypes.windll.psapi.GetProcessMemoryInfo(
+            ctypes.windll.kernel32.GetCurrentProcess(),
+            ctypes.byref(pmc), pmc.cb):
+        gb = pmc.WorkingSetSize / (1024 ** 3)
+        if gb > MEM_LIMIT_GB:
+            raise MemoryError(f"build exceeded {MEM_LIMIT_GB} GB RAM "
+                              f"({gb:.1f} GB) — aborting before the OS does")
+
+
+def helical_ridge_segments(r_root, depth, w_root, w_crest, lead, wrap_deg,
+                           z0=0.0, phase_deg=0.0, embed=0.25):
+    """Helical thread ridge (right-hand, axis +Z) as a LIST of <=360-degree
+    swept segments. One long multi-turn sweep + fuse explodes OCC memory;
+    one-turn segments stacked by exact translation fuse cheaply (consecutive
+    segments share a planar end face in the start half-plane).
+    Profile: symmetric trapezoid, embedded `embed` below r_root."""
     pts = [(r_root - embed, -w_root / 2.0),
            (r_root + depth, -w_crest / 2.0),
            (r_root + depth, w_crest / 2.0),
            (r_root - embed, w_root / 2.0)]
-    ridge = (cq.Workplane("XZ")
-             .polyline(pts).close()
-             .sweep(cq.Workplane(obj=helix), isFrenet=True))
-    if phase_deg:
-        ridge = ridge.rotate((0, 0, 0), (0, 0, 1), phase_deg)
-    if z0:
-        ridge = ridge.translate((0, 0, z0))
-    return ridge
+    segs = []
+    done = 0.0
+    while done < wrap_deg - 1e-6:
+        seg_wrap = min(360.0, wrap_deg - done)
+        height = lead * seg_wrap / 360.0
+        helix = cq.Wire.makeHelix(lead, height, r_root)
+        ridge = (cq.Workplane("XZ")
+                 .polyline(pts).close()
+                 .sweep(cq.Workplane(obj=helix), isFrenet=True))
+        ph = phase_deg + done          # angular position of this segment start
+        dz = z0 + lead * done / 360.0  # height of this segment start
+        ridge = ridge.rotate((0, 0, 0), (0, 0, 1), ph % 360.0)
+        ridge = ridge.translate((0, 0, dz))
+        segs.append(ridge)
+        done += seg_wrap
+    return segs
+
+
+def union_all(target, solids, label=""):
+    for i, s in enumerate(solids):
+        target = target.union(s)
+        check_mem()
+        print(f"    union {label} {i+1}/{len(solids)}", flush=True)
+    return target
+
+
+def cut_all(target, solids, label=""):
+    for i, s in enumerate(solids):
+        target = target.cut(s)
+        check_mem()
+        print(f"    cut {label} {i+1}/{len(solids)}", flush=True)
+    return target
 
 
 def tube(od, id_, h, z0=0.0):
@@ -190,22 +245,27 @@ def cone_cut(d_top, d_bot, z_bot, h):
 # z = PCO_X_LIP_TO_LEDGE (17.0). Thread descends from near the lip.
 # ============================================================================
 
-def pco_male_ridge(radial_comp=0.0, axial_grow=0.0, wrap_extra_deg=0.0):
-    """Male PCO ridge in neck-local coords. radial_comp shrinks (plug) or grows
-    (>0 with axial_grow -> female groove cutter). wrap_extra extends the helix
-    DOWNWARD in local z (= past the socket entry once inverted)."""
+def pco_male_ridge_segments(radial_comp=0.0, axial_grow=0.0, wrap_extra_deg=0.0):
+    """Male PCO ridge (list of segments) in neck-local coords. radial_comp
+    shrinks (plug) or grows (>0 with axial_grow -> female groove cutter).
+    wrap_extra extends the helix DOWNWARD in local z (= past the socket entry
+    once inverted)."""
     z_lip = PCO_X_LIP_TO_LEDGE
     z_hi = z_lip - PCO_LIP_TO_THREAD                       # 15.3 upper ridge end
     wrap = PCO_WRAP_DEG + wrap_extra_deg
     height = PCO_PITCH * wrap / 360.0
     z_lo = z_hi - height
     r_root = PCO_E / 2.0 + radial_comp
-    depth = PCO_RIDGE_DEPTH + max(0.0, radial_comp) * 0.0  # depth kept nominal
-    # for the female cutter we want the OUTER radius grown too:
-    return helical_ridge(r_root, depth + (radial_comp if radial_comp > 0 else 0),
-                         PCO_RIDGE_W_ROOT + 2 * axial_grow,
-                         PCO_RIDGE_W_CREST + 2 * axial_grow,
-                         PCO_PITCH, wrap, z0=z_lo)
+    # for the female cutter the OUTER radius must grow by the clearance too:
+    return helical_ridge_segments(
+        r_root, PCO_RIDGE_DEPTH + (radial_comp if radial_comp > 0 else 0),
+        PCO_RIDGE_W_ROOT + 2 * axial_grow,
+        PCO_RIDGE_W_CREST + 2 * axial_grow,
+        PCO_PITCH, wrap, z0=z_lo,
+        phase_deg=-(wrap % 360.0))
+    # phase: the ridge END (top, near the lip) must sit at a fixed angle
+    # regardless of wrap length, so male (650) and cutter (650+extra) line up:
+    # segments start at z_lo with phase such that angle at z_hi == 0.
 
 
 def build_ref_bottle(with_body=True):
@@ -213,7 +273,8 @@ def build_ref_bottle(with_body=True):
     (ledge at z=0, lip at z=17, axis +Z = toward the lip)."""
     z_lip = PCO_X_LIP_TO_LEDGE
     neck = tube(PCO_E, PCO_C, z_lip)                       # neck wall at root Ø
-    neck = neck.union(pco_male_ridge(radial_comp=-0.0))
+    neck = union_all(neck, pco_male_ridge_segments(radial_comp=-0.0),
+                     "bottle ridge")
     # ØF/ØG collar between thread start and lip (this is what jams bad caps)
     neck = neck.union(tube(PCO_G_COLLAR, PCO_C, PCO_LIP_TO_THREAD + 0.6,
                            z0=z_lip - PCO_LIP_TO_THREAD - 0.6))
@@ -246,7 +307,9 @@ def bottle_world_transform(wp):
 # BODY
 # ============================================================================
 
-def build_body(fast=False):
+def build_tray(fast=False):
+    """Tray subassembly: dish, bosses, rescue ridges, wall ribs, outlet ribs.
+    NO cuts needed here; fused with the riser exactly once in build_body."""
     # ---- tray dish ----
     body = cq.Workplane("XY").circle(TRAY_OD / 2.0).extrude(Z_RIM_TOP)
     body = body.cut(tube(TRAY_OD - 2 * TRAY_WALL, 0,
@@ -270,11 +333,14 @@ def build_body(fast=False):
                 if r_in + BOSS_AF / 2.0 <= r <= r_out:
                     pts.append((x, y))
         boss_h = POOL_DEPTH + BOSS_FREEBOARD
+        print(f"  tray: fusing {len(pts)} hex bosses...", flush=True)
         bosses = (cq.Workplane("XY", origin=(0, 0, Z_FLOOR_TOP))
                   .pushPoints(pts)
                   .polygon(6, BOSS_AF / math.cos(math.radians(30)))
                   .extrude(boss_h))
         body = body.union(bosses)
+        check_mem()
+        print("  tray: bosses fused", flush=True)
 
     # ---- rescue ridges (radial, full wall height, climb-out during floods) ----
     for k in range(N_RIDGES):
@@ -296,35 +362,47 @@ def build_body(fast=False):
                .rotate((0, 0, 0), (0, 0, 1), ang))
         body = body.union(rib)
 
-    # ---- outlet ribs + column + cone + flange + barrel ----
+    # ---- outlet ribs (floor -> column wall; inner end stops at the bore
+    #      radius so they never re-fill the bore when tray and riser fuse) ----
     for k in range(N_RIBS):
         ang = k * 360.0 / N_RIBS
         rib = (cq.Workplane("XY", origin=(0, 0, Z_FLOOR_TOP))
-               .box(COLUMN_OD / 2.0 + 3.5, RIB_W, (Z_MOUTH - Z_FLOOR_TOP) + 3.0,
+               .box(COLUMN_OD / 2.0 + 3.5 - (BORE_D / 2.0 + 0.2), RIB_W,
+                    (Z_MOUTH - Z_FLOOR_TOP) + 3.0,
                     centered=(False, True, False))
+               .translate((BORE_D / 2.0 + 0.2, 0, 0))
                .rotate((0, 0, 0), (0, 0, 1), ang))
         body = body.union(rib)
-    body = body.union(tube(COLUMN_OD, 0, Z_CEILING - Z_MOUTH, z0=Z_MOUTH))
+    return body
+
+
+def build_riser():
+    """Riser subassembly: column, cone, flange, threaded barrel, all cuts
+    (bore, socket, female PCO groove). Everything happens on a SMALL solid;
+    the expensive tray fuse happens once, afterwards."""
+    print("  riser: column/cone/flange/core", flush=True)
+    r = tube(COLUMN_OD, 0, Z_CEILING - Z_MOUTH, z0=Z_MOUTH)
     cone = (cq.Workplane("XZ")
             .polyline([(0, Z_CONE_BASE), (CONE_R0, Z_CONE_BASE),
                        (CONE_R1, Z_CEILING), (0, Z_CEILING)])
             .close().revolve(360, (0, 0, 0), (0, 0, 1)))
-    body = body.union(cone)
-    body = body.union(tube(FLANGE_OD, 0, FLANGE_LAND_H, z0=Z_CEILING - FLANGE_LAND_H))
-    # barrel core
-    body = body.union(tube(CLAMP_MAJOR_D - 2 * CLAMP_DEPTH, 0,
-                           Z_BARREL_TOP - Z_CEILING, z0=Z_CEILING))
+    r = r.union(cone)
+    r = r.union(tube(FLANGE_OD, 0, FLANGE_LAND_H, z0=Z_CEILING - FLANGE_LAND_H))
+    r = r.union(tube(CLAMP_MAJOR_D - 2 * CLAMP_DEPTH, 0,
+                     Z_BARREL_TOP - Z_CEILING, z0=Z_CEILING))
+    check_mem()
 
-    # ---- clamp thread (2 starts, full barrel length) ----
+    # ---- clamp thread (2 starts, full barrel length, one-turn segments) ----
     r_minor = CLAMP_MAJOR_D / 2.0 - CLAMP_DEPTH
     wrap = (Z_BARREL_TOP - 1.5 - (Z_CEILING + 0.5)) / CLAMP_LEAD * 360.0
     for k in range(CLAMP_STARTS):
-        ridge = helical_ridge(r_minor, CLAMP_DEPTH, CLAMP_W_ROOT, CLAMP_W_CREST,
-                              CLAMP_LEAD, wrap, z0=Z_CEILING + 0.5,
-                              phase_deg=k * 360.0 / CLAMP_STARTS)
-        body = body.union(ridge)
+        segs = helical_ridge_segments(
+            r_minor, CLAMP_DEPTH, CLAMP_W_ROOT, CLAMP_W_CREST,
+            CLAMP_LEAD, wrap, z0=Z_CEILING + 0.5,
+            phase_deg=k * 360.0 / CLAMP_STARTS)
+        r = union_all(r, segs, f"clamp ridge start {k}")
     # thread lead-in: chamfer the barrel top region by cutting a cone ring
-    body = body.cut(
+    r = r.cut(
         (cq.Workplane("XZ")
          .polyline([(r_minor + 0.2, Z_BARREL_TOP + 0.01),
                     (CLAMP_MAJOR_D / 2.0 + 1.0, Z_BARREL_TOP + 0.01),
@@ -332,22 +410,35 @@ def build_body(fast=False):
          .close().revolve(360, (0, 0, 0), (0, 0, 1))))
 
     # ---- bore ----
-    body = body.cut(tube(BORE_D, 0, Z_BARREL_TOP - Z_MOUTH + 2, z0=Z_MOUTH))
+    print("  riser: bore + socket cuts", flush=True)
+    r = r.cut(tube(BORE_D, 0, Z_BARREL_TOP - Z_MOUTH + 2, z0=Z_MOUTH))
 
     # ---- socket: entry relief, bore, seat, female PCO groove ----
-    body = body.cut(tube(SOCKET_BORE_D, 0, SEAT_DEPTH, z0=Z_SEAT))
+    r = r.cut(tube(SOCKET_BORE_D, 0, SEAT_DEPTH, z0=Z_SEAT))
     # TE-bead relief + lead-in at the entry (bead reaches the barrel top plane
     # at full crush: lip at 8.8 deep, bead slope starts 9.0 below lip)
-    body = body.cut(tube(PCO_BEAD_D + 1.2, 0, 2.0, z0=Z_BARREL_TOP - 2.0))
-    body = body.cut(cone_cut(SOCKET_BORE_D + 3.0, SOCKET_BORE_D,
-                             Z_BARREL_TOP - 2.6, 2.6))
+    r = r.cut(tube(PCO_BEAD_D + 1.2, 0, 2.0, z0=Z_BARREL_TOP - 2.0))
+    r = r.cut(cone_cut(SOCKET_BORE_D + 3.0, SOCKET_BORE_D,
+                       Z_BARREL_TOP - 2.6, 2.6))
     # female groove = dilated male ridge, seated transform, wrap extended past entry
-    groove = pco_male_ridge(radial_comp=PCO_CLR_RADIAL,
-                            axial_grow=PCO_CLR_AXIAL,
-                            wrap_extra_deg=540.0)
-    groove = bottle_world_transform(groove)
-    body = body.cut(groove)
+    groove_segs = [bottle_world_transform(g) for g in
+                   pco_male_ridge_segments(radial_comp=PCO_CLR_RADIAL,
+                                           axial_grow=PCO_CLR_AXIAL,
+                                           wrap_extra_deg=540.0)]
+    r = cut_all(r, groove_segs, "pco groove")
+    return r
 
+
+def build_body(fast=False):
+    print("  tray subassembly...", flush=True)
+    tray = build_tray(fast=fast)
+    check_mem()
+    print("  riser subassembly...", flush=True)
+    riser = build_riser()
+    check_mem()
+    print("  final fuse tray+riser (the one big boolean)...", flush=True)
+    body = tray.union(riser)
+    check_mem()
     return body
 
 
@@ -380,12 +471,13 @@ def build_nut():
     nut = nut.cut(tube(2 * r_bore, 0, NUT_H + SKIRT_T * 1.6 + 2, z0=-1))
     wrap = (NUT_H + 4 * CLAMP_LEAD) / CLAMP_LEAD * 360.0
     for k in range(CLAMP_STARTS):
-        groove = helical_ridge(r_bore - 0.2, CLAMP_DEPTH + CLAMP_CLR_RADIAL + 0.2,
-                               CLAMP_W_ROOT + 2 * CLAMP_CLR_AXIAL,
-                               CLAMP_W_CREST + 2 * CLAMP_CLR_AXIAL,
-                               CLAMP_LEAD, wrap, z0=-2 * CLAMP_LEAD,
-                               phase_deg=k * 360.0 / CLAMP_STARTS)
-        nut = nut.cut(groove)
+        segs = helical_ridge_segments(
+            r_bore - 0.2, CLAMP_DEPTH + CLAMP_CLR_RADIAL + 0.2,
+            CLAMP_W_ROOT + 2 * CLAMP_CLR_AXIAL,
+            CLAMP_W_CREST + 2 * CLAMP_CLR_AXIAL,
+            CLAMP_LEAD, wrap, z0=-2 * CLAMP_LEAD,
+            phase_deg=k * 360.0 / CLAMP_STARTS)
+        nut = cut_all(nut, segs, f"nut groove start {k}")
     # lead-in chamfer cones both ends
     nut = nut.cut(cone_cut(2 * r_bore + 3.0, 2 * r_bore, NUT_H - 1.6, 1.7)
                   .translate((0, 0, 0)))
@@ -423,10 +515,9 @@ def build_plug():
     plug = plug.union(tube(PCO_E - 2 * PLUG_COMP, 0, stub_h, z0=PLUG_DISC_T))
     # male thread positioned like the bottle's: lip-equivalent = stub top face
     z_lip_eq = PLUG_DISC_T + stub_h
-    ridge = pco_male_ridge(radial_comp=-PLUG_COMP)
-    # neck-local lip is at PCO_X_LIP_TO_LEDGE; shift so lip lands on z_lip_eq
-    ridge = ridge.translate((0, 0, z_lip_eq - PCO_X_LIP_TO_LEDGE))
-    plug = plug.union(ridge)
+    ridge_segs = [g.translate((0, 0, z_lip_eq - PCO_X_LIP_TO_LEDGE))
+                  for g in pco_male_ridge_segments(radial_comp=-PLUG_COMP)]
+    plug = union_all(plug, ridge_segs, "plug ridge")
     # entry chamfer on the stub tip (tip is the top face as printed)
     tip_cham = (cq.Workplane("XZ")
                 .polyline([(PCO_E / 2.0 - 1.7, z_lip_eq + 0.01),
@@ -465,13 +556,17 @@ def build_coupons(body, nut):
 
 def build_all(fast=False):
     parts = {}
+    print("building body...", flush=True)
     parts["body"] = build_body(fast=fast)
+    print("building nut...", flush=True)
     parts["clamp_nut"] = build_nut()
+    print("building gasket/plug/refs...", flush=True)
     parts["gasket_tpu"] = build_gasket()
     parts["plug"] = build_plug()
     parts["ref_bottle"] = bottle_world_transform(build_ref_bottle())
     parts["ref_roof_8"] = build_roof(ROOF_MIN).translate((0, 0, Z_CEILING))
     parts["ref_roof_30"] = build_roof(ROOF_MAX).translate((0, 0, Z_CEILING))
+    print("slicing coupons...", flush=True)
     parts["coupon_socket"], parts["coupon_nut_ring"] = build_coupons(
         parts["body"], parts["clamp_nut"])
     return parts

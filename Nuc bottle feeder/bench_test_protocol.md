@@ -37,6 +37,17 @@ Practice the swap from `assembly_field_instructions.md` with water until the inv
 screw motion is one smooth 2-turn commit. Confirm: spill lands in the tray (not past the
 rim), plug goes in/out with gloves on.
 
+## 4b. Adapter gate test (10 min)
+
+1. Screw the adapter (with its gasket) onto a full bottle of water, upright, hand-tight.
+2. Flip it over a measuring cup and hold it free in the air.
+   **Expect:** a short dribble (≤ 5 ml), then complete stop within ~3 s. Hold 2 min: no
+   further drips. FAIL (continuous drip) = air leak at the bottle↔adapter gasket, or
+   orifice holes printed oversize — reseat/reprint.
+3. Screw the flipped assembly into the feeder socket: regulation cycle from test 1 must
+   repeat identically (glugs, then quiet at the pool line).
+4. Unscrew it again mid-flow — the gate must re-lock after the barrel column drains.
+
 ## 5. Clamp extremes (once, with the printed parts)
 
 Clamp the feeder on 8 mm plywood and on a 30 mm stack: nut reaches firm hand-tight on

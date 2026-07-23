@@ -3,6 +3,14 @@
 **Status:** v1 — modeled, script-verified, not yet printed. Print the two coupons first
 (see `print_notes.md`), then bench-test per `bench_test_protocol.md` before any hive install.
 
+**Parametric source of truth: `nuc_bottle_feeder.FCStd`** (FreeCAD). The geometry was
+built via the FreeCAD MCP after CadQuery proved unusable on this machine (60 GB RAM
+blow-ups); `model.py` is the legacy CadQuery script kept for parameter reference only.
+CAD-level assembly checks (clamp-thread engagement sweep at both roof extremes: 0.00 mm³
+interference; seated ref-bottle interference: 0.000 mm³; syrup-path/adapter probes) ran
+inside FreeCAD; `verify.py` re-verifies the exported STLs with trimesh. Exports:
+`stl/*.stl` (print-ready orientations) + `nuc_feeder_all.step`.
+
 ## Architecture — "monolithic bulkhead tray"
 
 One printed PETG **body** = drinking tray + hollow barrel that rises through the roof:
@@ -155,8 +163,36 @@ climb-out paths if a thermal event ever raises the level above the bosses.
    saw cleanly (plywood: yes; polystyrene nuc boxes: drill gently, the clamp faces are
    wide enough to spread load).
 
+## Bottle adapter (cap-connector) — user-requested addition
+
+**Problem:** the bare-bottle swap requires inverting an open, full bottle over the socket
+and committing to a ~2-turn screw-in while it glugs (~30 ml). Workable but messy and
+stressful with gloves.
+
+**Solution:** a passive two-ended coupler, *fully independent of the roof clamp*:
+
+- **Top half** — a female PCO-1881 cap (same socket geometry as the barrel: bore Ø25.55,
+  dilated-thread groove, internal shoulder + its own Ø25×Ø17×2 TPU gasket). The bottle is
+  screwed in **upright on the bench**, so this joint is made with zero spill and can be
+  checked at leisure. Cavity depth 10 mm (lip lands at 8.8 mm after 0.8 mm gasket crush);
+  the TE bead clears the rim exactly as in the barrel socket.
+- **Bottom half** — the transport plug's male PCO stub (OD 23.9 = E−2×0.15 comp, 9 mm,
+  same thread) that screws into the unchanged feeder socket and seals on the main gasket.
+- **Gate** — an orifice plate between them: 7 × Ø1.5 mm holes over a Ø16 bore. No moving
+  parts. Physics: a Ø1.5 hole supports only ~16 mm of syrup head by surface tension, so
+  on flipping, syrup escapes until the sealed headspace develops ~2.5 kPa of vacuum —
+  after **1–2 ml** the flow self-stops (identical to a perforated pail-feeder lid).
+  Screwing into the feeder then restores the normal glug cycle; the 12 mm² total orifice
+  area passes glug exchange with margin (pail feeders run colonies on less).
+- **Geometry:** stub 9 → 45° cone → Ø44 knurled grip disc → Ø36 cap, total ~35 mm added
+  stack height — all *above* the roof line, so headspace under the tray is unaffected.
+- **Cost:** one extra gasketed joint vs. the bare bottle — but it is made upright,
+  bench-side, and testable before it ever sees the hive, and the §1.3 catastrophic-leak
+  joint (seat gasket) is untouched. Bare-bottle operation remains fully supported.
+
 ## Departures from the brief
 
 - None structural. Additions beyond the letter of the brief: monolithic body (airtight-
   joint minimization), nut ant-skirt, rescue ridges, transport plug doubling as the §3.2
-  bee-tight cap, gasket-crush thread positioning (ISBT-style seat-before-bottom).
+  bee-tight cap, gasket-crush thread positioning (ISBT-style seat-before-bottom), and the
+  bottle adapter above (user-requested during review).
