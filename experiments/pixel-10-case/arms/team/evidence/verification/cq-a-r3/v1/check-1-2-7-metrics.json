@@ -1,0 +1,114 @@
+{
+  "inverse_transform": "translate printer Z by -1.75 mm then rotate 180 degrees about X (model.py REAR_BACK_Z_MM)",
+  "installed_candidate_bounds_mm": [
+    [
+      -37.95000076293945,
+      0.3826969563961017,
+      -10.149999618530293
+    ],
+    [
+      37.95000076293945,
+      156.6999969482422,
+      1.7499999999999982
+    ]
+  ],
+  "reference_bounds_mm": [
+    [
+      -36.0,
+      -1.7763568394002505e-15,
+      -8.600000381469727
+    ],
+    [
+      37.0,
+      152.8000030517578,
+      2.0
+    ]
+  ],
+  "interference_threshold_mm3": 0.001,
+  "seat_interference_volume_mm3": 0.0,
+  "sweep": [
+    {
+      "screenward_offset_mm": -18,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -17,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -16,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -15,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -14,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -13,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -12,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -11,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -10,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -9,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -8,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -7,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -6,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -5,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -4,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -3,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -2,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": -1,
+      "interference_volume_mm3": 0.0
+    },
+    {
+      "screenward_offset_mm": 0,
+      "interference_volume_mm3": 0.0
+    }
+  ],
+  "printer_orientation": {
+    "downward_face_area_above_z_0_3_mm2": 0.0,
+    "downward_face_count_above_z_0_3": 0,
+    "min_z_mm": 2.220446049250313e-16,
+    "bed_band_area_mm2": 9335.031779633691,
+    "watertight": true
+  }
+}

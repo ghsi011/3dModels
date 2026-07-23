@@ -1,0 +1,11 @@
+Candidate STL re-imported in its supplied printer coordinates.
+SHA-256: 0baa59672955e4f01a51df1f4a4c122b8b62d13839510e2bfe515da13d8a9d86
+Watertight: true
+Winding consistent: true
+Components: 1
+BBox mm: 75.900 x 156.317 x 14.950
+Downward faces more than 45 degrees from vertical and above Z=0.3 mm: 309
+Unsupported downward-facing area mm2: 9032.212
+Downward-face centre Z range mm: 3.05 to 3.25
+Central vertical probe at X=0, Y=-80 mm: material absent at Z=0.1, 1, 2, 3; present at Z=3.2, 3.5, 4, 4.4; absent at Z=4.6, 5, 10, 14.
+Result: FAIL P-009 and P-010. The broad rear panel is a suspended roof rather than the required bed-contact exterior rear-back face; zero-support printing is not satisfied.

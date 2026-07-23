@@ -1,0 +1,9 @@
+candidate STL: pixel10_case_cq_a.stl
+sha256: 957d50cd7e6bcb2521044d4aaed5b7be3015fc62f7ceeff4dbe28f564cfdfe1f
+re-imported mesh: watertight=True, triangles=2836, volume_mm3=32050.895
+print-coordinate bbox_mm: 75.900 x 156.317 x 14.950
+planned print orientation: exported STL as supplied
+downward-facing area above z=0.3 mm: 19461.866 mm2
+largest unsupported downward face band: 10429.653 mm2 at printer z=13.750 mm
+plan support budget: zero supports
+finding: fail. The upper 10429.653 mm2 face is the continuous screen-side closure over the cavity, not a <=5 mm bridge.

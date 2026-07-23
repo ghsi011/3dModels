@@ -1,0 +1,98 @@
+{
+  "watertight": true,
+  "positive_mesh_volume": true,
+  "case_bbox_exported_stl": [
+    76.2,
+    157.0,
+    11.25
+  ],
+  "bbox_matches_design": true,
+  "phone_ref_bbox_exported_stl": [
+    72.0,
+    152.8,
+    8.6
+  ],
+  "seated_interference_vertices": 0,
+  "seated_interference_pass": true,
+  "insertion_sweep": [
+    {
+      "lift_mm": 45,
+      "embedded_reference_vertices": 0
+    },
+    {
+      "lift_mm": 30,
+      "embedded_reference_vertices": 0
+    },
+    {
+      "lift_mm": 15,
+      "embedded_reference_vertices": 0
+    },
+    {
+      "lift_mm": 5,
+      "embedded_reference_vertices": 0
+    },
+    {
+      "lift_mm": 0,
+      "embedded_reference_vertices": 0
+    }
+  ],
+  "insertion_sweep_pass": true,
+  "section_mesh_watertight": true,
+  "renders_from_exported_stls": [
+    "render_exterior_isometric.png",
+    "render_phone_case_fit.png",
+    "render_section.png",
+    "render_print_orientation.png"
+  ],
+  "camera_window_mesh_datum_measurement": {
+    "x_span": [
+      -32.29999923706055,
+      32.29999923706055
+    ],
+    "y_span": [
+      37.70000076293945,
+      62.29999923706055
+    ]
+  },
+  "camera_window_mesh_center_from_phone_centerline": [
+    0.0,
+    50.0
+  ],
+  "camera_window_mesh_size": [
+    64.5999984741211,
+    24.599998474121094
+  ],
+  "camera_window_position_pass": true,
+  "named_datums": {
+    "phone_centerline": [
+      0,
+      0
+    ],
+    "camera_center_y": 50.0,
+    "bottom_edge_y": -78.5,
+    "top_edge_y": 78.5,
+    "right_edge_x": 38.1
+  },
+  "measurement_audit": {
+    "official_phone_body": [
+      72.0,
+      152.8,
+      8.6
+    ],
+    "case_wall_mm": 1.8,
+    "back_mm": 1.6,
+    "side_clearance_mm": 0.3,
+    "screen_lip_mm": 1.05,
+    "camera_aperture_mm": [
+      64.0,
+      24.0
+    ],
+    "bottom_relief": "USB-C/speaker/mic",
+    "top_relief": "mic/speaker",
+    "right_relief": "power/volume"
+  },
+  "unsupported_downfacing_area_mm2": 0.0,
+  "printability_pass": true,
+  "mesh_face_count": 2040,
+  "overall_pass": true
+}
