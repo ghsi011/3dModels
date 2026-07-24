@@ -1,0 +1,15 @@
+V3 ancillary exported-STL evidence (CadQuery/trimesh re-import; no candidate generation)
+candidate_sha256=255945baa7ab980fb6d43a092cb1a36307e09dd20a53b9c26e971f82f7905960
+reference_sha256=81aafa0f715f84efc19cf6767152bb4b1f1412b9f219a504aa45e3ad23157a48
+step_sha256=5aed8568bc2a3dba7e3b6081a666aed2a7916e5b5e9349a1772184314486d536
+watertight=True components=1 euler=2
+bounds_mm=[[-2.1, -1.545817, -1.3], [74.099998, 154.899994, 9.7]] volume_mm3=15856.857053
+seated_intersection_mm3=0.000000000
+sweep_intersection_mm3=0.0:0.000000000, 1.0:0.000000000, 2.0:0.000000000, 3.0:0.000000000, 4.0:0.000000000, 5.0:0.000000000, 6.0:0.000000000, 7.0:0.000000000, 8.0:0.000000000, 9.0:0.000000000, 10.0:0.000000000, 11.0:0.000000000, 12.0:0.000000000, 13.0:0.000000000, 14.0:0.000000000, 15.0:0.000000000, 16.0:0.000000000
+mid_y_section_vertices=234 x_range_mm=[-2.0999999046325684, 74.0999984741211] z_range_mm=[-1.2999999523162842, 9.699999809265137]
+required_transform_z_range_mm=[-0.000000047,60.828264578] contact_vertices_abs_lt_0p05=16
+unsupported_downward_area_mm2=27.541083082 faces=1250
+exported_mesh_sharp_edges_dihedral_ge_85deg=398 ge_45deg=603 max_dihedral_deg=108.228768
+opening_zone_intersection_mm3=F14_rear_aperture_inner:0.000000000, F21_bottom_opening_inner:0.000000000, F05_F06_top_opening_inner:0.000000000, F07_F08_right_sidewall:0.000000000
+visual_inspection=V3 viewed all four candidate renders and reference_rear_overlay.png; render_exterior.png supplies the candidate/S2 rear composite and explicitly labels it relative-layout-only.
+interpretation=All numeric records above derive from re-imported pixel10_case.stl, except file hashes and visual-inspection statement. Authoritative V3 verdict and complete exact-G05 audit are in verification_report.md and verification_evidence_v3.md.

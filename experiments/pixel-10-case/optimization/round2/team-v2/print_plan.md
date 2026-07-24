@@ -1,0 +1,49 @@
+---
+contract: print-plan
+contract_version: 2
+job_id: pixel-10-base-case-v2
+revision: 4
+owner: print-engineer
+status: ACCEPTED
+dimensions_revision: 2
+reference_sha256: 81aafa0f715f84efc19cf6767152bb4b1f1412b9f219a504aa45e3ad23157a48
+updated_utc: 2026-07-24T02:20:00Z
+---
+
+# Print plan
+
+## Process
+| Printer/material/nozzle | Layer | Environment/load | Rationale |
+|---|---:|---|---|
+| Bambu Lab X2D Combo; dry TPU 95A from external spool; main 0.4 mm nozzle only; 0.45 mm lip perimeter width | 0.20 mm nominal; exactly 0.16 mm in the F23 round's full printer-Z extent | Textured PEI; normal/cool chamber; 40--60 mm/s; 4 perimeter-equivalent walls where thickness permits | TPU is a specified protective/grip material. The X2D auxiliary/Bowden nozzle and AMS are prohibited for TPU. The tilted case aligns continuous layers around the thin shell rather than making the rear wall a Z-peel plane. The known non-self-supporting regions require manual, exterior-only TPU supports; their toolpath/contact proof belongs to P2 post-PASS, not candidate verification. |
+
+## Model-to-printer transform
+| Item | Exact value |
+|---|---|
+| Transform/rotation | Let `L` be the midpoint of the intentionally flattened **rear-left longitudinal contact land**, on the exterior rail, at model-frame `Y=76.4`. For every model point `p`, set `q = (128, 128, 0) + R_y(-45 degrees) (p-L)`, where `R_y(-45 degrees) = [[0.70710678,0,-0.70710678],[0,1,0],[0.70710678,0,0.70710678]]`. Do not mirror any axis. Thus `L` is at printer `(128,128,0)` and the phone frame remains right-handed. |
+| Bed-contact landmark | `L`: the 1.0 mm-wide, continuous exterior rear-left longitudinal contact land; it is a deliberately flattened/chamfer-bounded rail, not a cavity, lip, camera rim, opening edge, or dimension-critical phone-contact surface. |
+| Bed normal | Printer `+Z = (0,0,1)`. The model is rotated about model `+Y`; all of `L` is coplanar with printer `Z=0` to within 0.05 mm. |
+| Open/insertion direction | Model insertion/open direction is `+Z` (away from rear datum A toward/front past D). Under the required transform it is printer `(-0.70710678,0,0.70710678)`; the open front must remain unobstructed along that vector. |
+| Forbidden downward faces | No support/contact may touch: the complete phone cavity and capture lip; F05/D09 top opening; F07/F08/D06 right-control response; F14/D05 rear aperture and camera-protection rim; F21/D07/D08 bottom opening; or the visible exterior face opposite `L`. These features must not be made downward roofs by a substitute orientation. |
+
+## Geometry rules
+| ID | Wall/feature/clearance/support/chamfer rule | Numeric limit | Verification predicate |
+|---|---|---:|---|
+| G01 | Mating envelope is controlled only by D01--D04/D10; preserve the stated nominal clearance. | X/Y: 0.30 mm per side; rear: 0.30 mm | Re-imported STL section at B/C/A shows cavity X=72.60, Y=153.40, rear depth=8.90 mm before coupon tuning. |
+| G02 | Structural side rails, corner capture, screen lip roots, camera-rim roots, and all material between functional openings must be perimeter-valid TPU. | >=1.60 mm, nominal 4 x 0.42 mm lines | No local rail/root below 1.60 mm; no isolated gap-fill is used as a load path. |
+| G03 | Qi2/Pixelsnap back is thin but continuous outside F14; do not thicken it to compensate for weak geometry. | 1.20--1.50 mm back wall | Re-imported section reports 1.20--1.50 mm outside F14, with no internal ribs, magnets, or metal. |
+| G04 | Protective lips are rounded, not knife edges; their functional height remains the metrology requirement. | F22/F23 >=0.80 mm proud; F23 exposed F14 edge radius `r=0.40 +/-0.02 mm` | Re-imported-STL sections/edge audit prove the proud condition and `0.38 <= r <= 0.42 mm`; no claim of final camera-stack fit while Q05 is open. |
+| G05 | Retain the exact `R_y(-45 degrees)` transform and its single `L` bed land. The V3 mesh audit proves that this orientation is not support-free: it has `4.408623 mm2` of out-of-limit area outside F23 and four F23 layer transitions (`0.405512..43.587353 mm`) beyond the self-support limit. Print those regions only with manually placed, exterior-side TPU supports; never accept the earlier self-support assertion. F23 remains a rounded functional edge, not a support-scarred knife edge. | F23 remains 0.16-mm layers, 0.45-mm perimeter width, >=0.10-mm overlap; self-supported contour offset remains `<=0.3500 mm`. Where V3's re-import audit finds an out-of-limit contour/face, P2's sliced project must supply prior-layer support material beneath it. Support interface: 0.20 mm Z gap, 0.45 mm interface-line width, two interface layers; support contact is permitted only on the unexposed exterior underside of the F23 surround or other nonfunctional exterior underside. No support may contact the exposed F23 `r=0.40 +/-0.02 mm` edge, cavity/capture lip, F05/D09, F07/F08/D06, F14 opening, F21/D07/D08, or visible exterior opposite `L`. | **Candidate verification (V):** apply the stated transform to the re-imported part and verify only that the identified support-eligible underside zones are exterior/nonfunctional and disjoint from every forbidden face and the exposed G04 radius; retain the part-only `4.408623 mm2` and four failing transitions as known, not-zero facts. V does not require a slicer project, toolpaths, contact selection, or layer map. **P2 post-PASS:** creates and proves the support coverage/contact/toolpath requirements below before final-print acceptance. |
+| G06 | A roof that cannot be eliminated must be an explicitly designed bridge with sacrificial clearance, never slicer support in the cavity. | clear span <=5.0 mm; droop clearance >=0.40 mm | STL section identifies each bridge; span and clearance meet limits. Any larger roof rejects the candidate. |
+| G07 | The required contact land is the only intended bed-contact geometry; protect it from elephant foot without changing mating geometry. | land width 1.0 mm; land-boundary chamfers 0.30--0.40 mm at 45 degrees | After transform, only `L` contacts Z=0; no B/C/A/D-controlled cavity edge is at/near the plate. |
+| G08 | Functional openings remain deliberately broad per accepted bounds; do not replace them with inferred micro-holes, grilles, or thin bridges. | minimum printable slot/web 0.80 mm; aperture corner radius >=3.0 mm for F14 | F05/F14/F21 remain open through their required response; no feature narrower than 0.80 mm is relied on. |
+| G09 | Load/flex paths may not end at a layer-peel root. | root fillet >=0.80 mm; no unsupported cantilever/root <1.60 mm thick | Tilted-orientation face audit and sections show corner/rail roots are continuous and filleted. |
+| G10 | Support budget and P2 post-PASS evidence. Supports are a controlled exception for V3-identified G05 regions, not a geometry waiver or automatic blanket support. | Manual support enforcers only: no support elsewhere; 0.20 mm Z gap; two 0.45 mm interface layers; support base may use a 3--5 mm brim only where it reaches `L` or its own nonfunctional support foot. | **P2 only, after independent V PASS:** deliver the native sliced project plus (a) one underside image with support contacts highlighted, (b) one F23 cross-section/toolpath image, and (c) a layer table mapping every V3 failing interval/area to its support footprint. The print engineer verifies complete support/interface coverage and contact-zone exclusions; a fresh verifier then assesses those exact P2 artifacts before final-print acceptance. Any support contact on a forbidden or exposed-G04 face is a final-prep failure; a support-free reassertion without the V3 numeric audit is also a failure. |
+
+## Coupon
+| Interfaces represented | Clearance lanes | Material | Pass/fail measurements |
+|---|---|---|---|
+| **One STL only:** five joined, 35 mm-long U-channel lanes reproducing the actual candidate's straight sidewall + rear wall + screen-lip/capture cross-section; lanes share only a 1.0 mm sacrificial base/bridges outside the test faces. Test with the actual phone and retain the selected lane in the CAD parameter record. | Per-side X/Y and rear clearances paired in each lane: `0.20/0.20`, `0.25/0.25`, `0.30/0.30`, `0.35/0.35`, `0.40/0.40` mm (first number side, second rear). Lane centre positions measured from coupon datum are 0, 12, 24, 36, 48 mm; no decorative text is required. | Same dried TPU 95A, same X2D main nozzle, 0.20 mm layer, same line width/temperature/flow as final case; external spool. PLA is prohibited for this clearance coupon because its compliance and shrink behavior are not representative. | For each lane record caliper-measured printed inside width and rear depth at both ends (target CAD value +/-0.10 mm), insert/remove force or qualitative force class, full seating against rear datum without bowing, retention when inverted, and any lip/edge witness mark. **Pass**: seats fully with no permanent TPU whitening/tear, no phone-function obstruction, stays retained inverted for 60 s, and removes by hand without tool/pry force. **Fail**: any non-seat, binding requiring tool/pry force, uncontrolled drop, permanent deformation, or witness mark. Choose the tightest passing lane; no lane passes means return to PRINT_PLAN. |
+
+## Final-prep placeholders
+Final slicer settings, print order, inspection, and field test are P2 post-verification work. This revision binds the unchanged exact orientation, the rounded G04 edge, the one TPU multi-lane coupon, and the bounded manual-support remedy for the independently measured V3 G05 failure. V4's P1R2 order defect is corrected: independent candidate verification evaluates support eligibility/exclusions only; P2 creates the slicer/contact/layer-map proof after PASS, followed by fresh verification of those P2 artifacts before final-print acceptance. The known part-only V3 failures remain recorded and are not relabelled as self-supporting or zero.
