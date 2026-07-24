@@ -39,6 +39,12 @@ overlays, and issue a concrete file-contract verdict.
    [`../../experiments/verify_visual.py`](../../experiments/verify_visual.py).
 6. Shared deterministic support predicate:
    [`../3d-modeling/scripts/team_preflight.py`](../3d-modeling/scripts/team_preflight.py).
+7. Shared artifact-manifest validator:
+   [`../3d-modeling/scripts/team_tools/`](../3d-modeling/scripts/team_tools/)
+   (`python -m team_tools.contracts validate <project-dir>`).
+8. Shared raw-vs-normalized mesh loader:
+   [`../3d-modeling/scripts/mesh_io.py`](../3d-modeling/scripts/mesh_io.py)
+   (`load_mesh_report` / `load_mesh_raw`).
 
 ## Checklist
 
@@ -48,6 +54,13 @@ overlays, and issue a concrete file-contract verdict.
 3. Audit upstream: independently compare `dimensions.md` values, named datums, provenance,
    and feature inventory against the original evidence. Reject corrupted ground truth.
 4. Re-import the exported STL and use it, not the in-memory source, for all geometric checks.
+   Load it with `mesh_io.load_mesh_report` (or `load_mesh_raw`) and use the **raw, unrepaired**
+   parse and its integrity metrics (watertight, connected components, degenerate-face count,
+   duplicate-vertex count, non-manifold edges) for every acceptance decision. Use the
+   **normalized** copy only for rendering, overlays, and other visuals — never for an
+   acceptance check. A repaired mesh must never stand in for the raw read: a genuine export
+   defect has to show up on the raw side before any repair runs, and the mutation log records
+   exactly what normalization changed.
 5. Run all seven checks: interference; full-travel insertion sweep; section render; visual
    side-by-side; feature positions from named datums; measurement audit; printability and
    face audit.
@@ -64,7 +77,13 @@ overlays, and issue a concrete file-contract verdict.
    support-audit` into verifier-owned JSON for every support rule; never trust the designer's
    JSON or infer contacts from an isometric view.
 8. Verify export completeness and consistency: STL/STEP/3MF identities, closed solids,
-   intended bodies, units, and no missing or stray components.
+   intended bodies, units, and no missing or stray components. Independently run
+   `python -m team_tools.contracts validate <project-dir>` (from `skills/3d-modeling/scripts/`)
+   against `artifact_manifest.json`; require exit code 0. Treat any `UNIT_SCALE_MISMATCH` —
+   the hard 25.4x inch/mm bbox check between the declared manifest and the re-imported STL —
+   as a hard `UNIT_SCALE` reject, never a warning to note and pass. A
+   `POSSIBLE_UNIT_SCALE_MISMATCH` warning still needs an explicit agent judgment call before
+   `PASS`.
 9. A `PASS` requires every applicable check to pass with evidence and no open critical
    upstream question.
 10. A `REJECT` must identify defect, evidence path, expected versus observed value/appearance,

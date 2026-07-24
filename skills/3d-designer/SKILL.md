@@ -25,6 +25,13 @@ the contracts.
 - Multi-colour jobs also output the required single-file multi-body 3MF.
 - Candidate commissions also output `candidate_readiness.md` from the re-imported exported
   STL. It is explicitly non-acceptance evidence.
+- Every commission (reference or candidate) also outputs `artifact_manifest.json`: declared
+  units plus, per produced STL/STEP/render artifact, `id`/`role`/`path`/`sha256`/
+  `expected_components`/`bbox`/`source_revisions` and an optional `transform`. See
+  [`../3d-modeling/references/team-contracts-v4.md`](../3d-modeling/references/team-contracts-v4.md#artifact_manifestjson)
+  for the field list and validate it with
+  `python -m team_tools.contracts validate <project-dir>` (from
+  `skills/3d-modeling/scripts/`) before handoff.
 
 ## Required reading
 
@@ -39,6 +46,9 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
    `candidate_readiness.md` only.
 6. Shared deterministic gate:
    [`../3d-modeling/scripts/team_preflight.py`](../3d-modeling/scripts/team_preflight.py).
+7. Shared artifact-manifest validator:
+   [`../3d-modeling/scripts/team_tools/`](../3d-modeling/scripts/team_tools/)
+   (`python -m team_tools.contracts validate <project-dir>`).
 
 ## Checklist
 
@@ -67,10 +77,13 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
    roof, bridge, and layer-transition rule. Measure the re-imported STL, record every
    nonzero footprint/interval, and correct failures inside this commission. These are
    deterministic self-checks, never acceptance.
-9. Write the machine-readable files required by the v4 contract. Run shared
+9. Write the machine-readable files required by the v4 contract, including
+   `artifact_manifest.json` for every produced artifact. Run shared
    `team_preflight.py support-audit` for every support rule and `validate-receipts` for the
-   complete Edge ID/support-rule sets. Markdown readiness may say `READY` only when the
-   shared validator exits zero and reports `PASS`. After a correction, rerun every row.
+   complete Edge ID/support-rule sets, plus `python -m team_tools.contracts validate
+   <project-dir>` for the manifest (hash/bbox/component-count checks and the hard 25.4x
+   unit-scale gate). Markdown readiness may say `READY` only when every shared validator exits
+   zero and reports `PASS`. After a correction, rerun every row.
 10. Provide `verify.py` and `candidate_readiness.md` as useful designer evidence, but mark
    both `DESIGNER SELF-CHECK — NON-ACCEPTANCE`. Never claim the Phase-4 gate passed.
 11. Record source parameters, orientation, material assumptions, supports, weak directions,

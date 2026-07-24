@@ -466,6 +466,27 @@ class JobStateValidatorTest(unittest.TestCase):
         issues, _ = V.validate_job_state(broken)
         self.assertIn("UNSUPPORTED_CONTRACT_VERSION@job_state.contract_version", issue_ids(issues))
 
+    def test_risk_class_is_optional_absence_passes(self) -> None:
+        # Backward compatibility: existing job_state.json files with no risk_class
+        # (as in _JOB_STATE) must still pass.
+        self.assertNotIn("risk_class", _JOB_STATE)
+        issues, _ = V.validate_job_state(clone(_JOB_STATE))
+        self.assertEqual([], [i for i in issues if i.severity == "error"], issues)
+
+    def test_risk_class_valid_value_passes(self) -> None:
+        for value in sorted(V.RISK_CLASS):
+            with_class = clone(_JOB_STATE)
+            with_class["risk_class"] = value
+            with_class["risk_class_rationale"] = "sustained load on a printed bracket"
+            issues, _ = V.validate_job_state(with_class)
+            self.assertEqual([], [i for i in issues if i.severity == "error"], (value, issues))
+
+    def test_risk_class_bad_value_rejected(self) -> None:
+        broken = clone(_JOB_STATE)
+        broken["risk_class"] = "R4_MADE_UP"
+        issues, _ = V.validate_job_state(broken)
+        self.assertIn("BAD_ENUM@job_state.risk_class", issue_ids(issues))
+
 
 # ---------------------------------------------------------------------------
 # validators.py: dimensions

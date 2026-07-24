@@ -62,6 +62,15 @@ Use `COMPACT` for a single candidate and one uncomplicated mating envelope. Use 
 multi-part/moving mechanisms, safety/load consequences, several independent interfaces,
 multi-colour alignment, or parallel candidates. Both profiles run the same gates.
 
+`job_state.md`'s `## Route` section also records the job's consequence/risk class from the
+orchestrator's Consequence and escalation gate (`R0_DECORATIVE` / `R1_LOW_CONSEQUENCE` /
+`R2_ENGINEERING_REVIEW` / `R3_PROHIBITED_AUTONOMOUS_ACCEPTANCE`; see
+[`../../3d-orchestrator/SKILL.md`](../../3d-orchestrator/SKILL.md)), its rationale, any named
+human reviewer requirement, and the claims the pipeline is prohibited from making for that
+class. An optional `risk_class` field on the JSON mirror carries the same enum when present;
+its absence is valid (backward-compatible) and only the Markdown/JSON `## Route` record is
+required.
+
 ## `dimensions.md`
 
 ```markdown
@@ -311,7 +320,8 @@ The orchestrator recomputes presence and hashes. `NOT_READY` stays inside the sa
 commission until corrected; no verifier is dispatched.
 
 The designer also writes `candidate_preflight.json`, one shared support-audit JSON per
-support rule, and `candidate_preflight_validation.json`. It must run:
+support rule, `candidate_preflight_validation.json`, and `artifact_manifest.json` (see below)
+covering every produced STL/STEP/render artifact. It must run:
 
 ```text
 python skills/3d-modeling/scripts/team_preflight.py support-audit \
@@ -346,6 +356,44 @@ Otherwise sample the re-imported STL at both endpoints and one interior point. A
 0.40 mm round must measure 0.38–0.42 mm at every sample. Source fillets, renders, and global
 sharp-edge counts are not measurements. These checks are dispatch preflight only; the fresh
 verifier independently repeats the applicable sections.
+
+## `artifact_manifest.json`
+
+Every commission that produces exported geometry (reference or candidate) also writes
+`artifact_manifest.json`: a **required candidate output**, machine-authoritative, no Markdown
+mirror. `contract_version: 1` (independent of the Markdown contracts' `contract_version: 4`).
+Owned by whichever commission produced the artifacts (the designer, for reference/candidate
+STL/STEP/renders); the orchestrator and verifier read and gate on it, never author it.
+
+Required top-level fields: `contract: artifact-manifest`, `contract_version: 1`, `job_id`,
+`candidate_id`, `units` (declared unit; currently only `mm`), `updated_utc`, and an `artifacts`
+list. Each artifact row: `id`, `role` (`reference | candidate | coupon | render | source |
+mating_reference | other`), `path` (project-relative), `type` (`stl | step | svg | png | md |
+json | py | 3mf`), `sha256` (recomputed from the file's bytes, never the agent-entered value),
+and optionally `expected_components`, `bbox` (`{"min": [x,y,z], "max": [x,y,z]}`),
+`source_revisions`, `transform`, `printable_deliverable`, and `paired_artifact_id` (an STL
+paired with its STEP twin, for the bbox cross-check below).
+
+Validation is already implemented in
+[`../scripts/team_tools/`](../scripts/team_tools/) — run
+`python -m team_tools.contracts validate <project-dir>` from `skills/3d-modeling/scripts/`.
+It checks: artifact file exists; declared hash matches the recomputed one; bbox is finite with
+positive extent on every axis; declared `expected_components` matches the re-imported STL's
+observed connected-component count; a `mating_reference` artifact can never be marked
+`printable_deliverable`; and artifact IDs are unique. **Unit/scale validation is a hard gate,
+not advisory:** the declared bbox extent is compared against the re-imported STL's actual
+extent, and an obvious 25.4x (inch/mm) ratio mismatch (within 0.5% of an exact ratio) is a hard
+`UNIT_SCALE_MISMATCH` validation error; a looser match (within 3%) downgrades to a
+`POSSIBLE_UNIT_SCALE_MISMATCH` warning instead of blocking. When a `paired_artifact_id` links an
+STL to a STEP artifact and both load, their bounding-box extents are cross-checked the same way
+(`STL_STEP_BBOX_MISMATCH`). STEP handling stays intentionally shallow: STEP loading is
+opportunistic and skipped, never failed, when no OCC/cascadio backend is installed — there is no
+deep STEP topology compare. STL bbox plus declared units is the load-bearing check.
+
+The verifier treats a failed `python -m team_tools.contracts validate` (non-zero exit) as a hard
+reject of the candidate's exported artifacts, distinct from the seven geometric checks. In
+particular, any `UNIT_SCALE_MISMATCH` is a hard `UNIT_SCALE` reject — never downgrade it to a
+note-and-pass — recorded as a defect owned by `CANDIDATE_BUILD`.
 
 ## `verification_report.md`
 

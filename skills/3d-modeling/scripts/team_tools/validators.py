@@ -46,6 +46,19 @@ BACKEND = frozenset({"cadquery", "freecad"})
 GATE_RESULT = frozenset({"PASS", "PENDING", "FAIL", "BLOCKED"})
 DISPATCH_STATUS = frozenset({"queued", "dispatched", "complete", "blocked"})
 
+# Consequence/escalation classification (3d-orchestrator/SKILL.md's "Consequence and
+# escalation gate", P-03). Optional on job_state for backward compatibility: existing
+# job_state.json files with no risk_class remain valid; when present it must be one of
+# these four values.
+RISK_CLASS = frozenset(
+    {
+        "R0_DECORATIVE",
+        "R1_LOW_CONSEQUENCE",
+        "R2_ENGINEERING_REVIEW",
+        "R3_PROHIBITED_AUTONOMOUS_ACCEPTANCE",
+    }
+)
+
 DIMENSIONS_STATUS = frozenset({"DRAFT", "REFERENCE_REVIEW", "ACCEPTED", "BLOCKED"})
 REF_VERDICT = frozenset({"ACCEPTED", "REJECTED"})
 
@@ -145,6 +158,8 @@ def validate_job_state(data: dict[str, Any], *, where: str = "job_state") -> tup
         },
         optional={
             "route": str,
+            "risk_class": str,
+            "risk_class_rationale": str,
             "bound_inputs": list,
             "gates": list,
             "dispatches": list,
@@ -159,6 +174,7 @@ def validate_job_state(data: dict[str, Any], *, where: str = "job_state") -> tup
     issues += check_enum(data, "profile", PROFILE, where)
     issues += check_enum(data, "state", JOB_STATE_STATES, where)
     issues += check_enum(data, "backend", BACKEND, where)
+    issues += check_enum(data, "risk_class", RISK_CLASS, where)
 
     def bound_input_row(row: dict[str, Any], row_where: str) -> list[Issue]:
         return check_object_fields(
