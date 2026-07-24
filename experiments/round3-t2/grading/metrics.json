@@ -1,0 +1,54 @@
+{
+  "rubric": {
+    "monolith": {
+      "export_function_gate": 35,
+      "hidden_functional_fit": 20,
+      "visual_usefulness": 8,
+      "dfm_process": 11,
+      "evidence_maintainability": 12,
+      "total": 86,
+      "hard_gate_pass": true
+    },
+    "team_v3": {
+      "export_function_gate": 35,
+      "hidden_functional_fit": 20,
+      "visual_usefulness": 11,
+      "dfm_process": 14,
+      "evidence_maintainability": 13,
+      "total": 93,
+      "hard_gate_pass": true
+    }
+  },
+  "ledger": {
+    "monolith": {
+      "critical_path_seconds": 360.3970061,
+      "contexts_or_commissions": 1,
+      "fresh_verifiers": 0,
+      "correction_loops": 0,
+      "files_excluding_caches": 12,
+      "bytes_excluding_caches": 451351,
+      "token_telemetry": "not exposed"
+    },
+    "team_v3": {
+      "critical_path_seconds": 4458,
+      "contexts_or_commissions": 13,
+      "fresh_verifiers": 4,
+      "correction_loops": 3,
+      "files_excluding_caches": 61,
+      "bytes_excluding_caches": 3660471,
+      "token_telemetry": "not exposed"
+    }
+  },
+  "adoption": {
+    "hard_gate": true,
+    "score": true,
+    "visual_plus_dfm": true,
+    "critical_path": false,
+    "commissions": false,
+    "verifier_and_corrections": false,
+    "footprint": false,
+    "final_export_measurements": true,
+    "role_gates_visual_coupon_artifact": true,
+    "keep_v3": false
+  }
+}

@@ -1,0 +1,317 @@
+{
+  "method": "fresh trimesh STL re-import; fresh CadQuery/OCCT STEP import and tessellation re-import",
+  "arms": {
+    "monolith": {
+      "files": {
+        "tool_stl": {
+          "path": "experiments\\round3-t2\\arms\\monolith\\filter_cap_tool.stl",
+          "sha256": "cbdc85ee1ee848f7c0683bc002f260f83e33f0fdf3b7b56c96b995ec0d44098b",
+          "bytes": 52284
+        },
+        "tool_step": {
+          "path": "experiments\\round3-t2\\arms\\monolith\\filter_cap_tool.step",
+          "sha256": "60dd4c88194af1a5c04ec853615a1e9aca5d92810711b0016861a37520414cca",
+          "bytes": 69373
+        },
+        "coupon_stl": {
+          "path": "experiments\\round3-t2\\arms\\monolith\\bar_engagement_coupon.stl",
+          "sha256": "06b5b2e2d950516215c8f089b58c1243352ed0b41abf88a975de2202f12ac853",
+          "bytes": 58284
+        }
+      },
+      "tool_stl_reimport": {
+        "watertight": true,
+        "components": 1,
+        "bbox_native_mm": [
+          46.00000000000001,
+          55.0,
+          116.0
+        ],
+        "volume_mm3": 273204.82898372633
+      },
+      "tool_step_fresh_import": {
+        "cadquery_valid": true,
+        "cadquery_volume_mm3": 273206.3216418919,
+        "cadquery_bbox_mm": [
+          46.02190030802753,
+          55.04078860301683,
+          116.04078860301682
+        ],
+        "tessellation_reimport_watertight": true,
+        "tessellation_components": 1,
+        "tessellation_volume_mm3": 273204.828983714
+      },
+      "coupon_stl_reimport": {
+        "watertight": true,
+        "components": 1,
+        "bbox_mm": [
+          29.000000000000007,
+          26.0,
+          74.69999885559082
+        ],
+        "volume_mm3": 37113.00155542144
+      },
+      "historical_scorer_raw_export": {
+        "test": "T2",
+        "files": [
+          "C:\\github\\3D\\.claude\\worktrees\\3d-modeling-multi-agent-split-fd66c0\\experiments\\round3-t2\\arms\\monolith\\filter_cap_tool.stl"
+        ],
+        "n_parts": 1,
+        "checks": [
+          {
+            "name": "slot width 12.1-14.2 (bar 11.7)",
+            "ok": false,
+            "crit": true,
+            "detail": "0.0"
+          },
+          {
+            "name": "slot depth >= 23 (bar 24)",
+            "ok": false,
+            "crit": true,
+            "detail": "0.0"
+          },
+          {
+            "name": "slot engages bar (>=58, or open-ended >=40)",
+            "ok": false,
+            "crit": true,
+            "detail": "0.0 open=False"
+          },
+          {
+            "name": "grip 58-95 across, h 45-95",
+            "ok": false,
+            "crit": false,
+            "detail": "[46.0, 55.0, 116.0]"
+          },
+          {
+            "name": "supportless in some orientation (<8%)",
+            "ok": true,
+            "crit": false,
+            "detail": "0.01"
+          }
+        ],
+        "watertight": true,
+        "bbox": [
+          46.0,
+          55.0,
+          116.0
+        ],
+        "volume_cm3": 273.2,
+        "overhang_frac": 0.01,
+        "crit_pass": 0,
+        "crit_total": 3,
+        "success": false,
+        "fit_score": 12,
+        "printability": 97
+      },
+      "historical_scorer_controlled_installed_frame": {
+        "test": "T2",
+        "files": [
+          "C:\\Users\\ghsi0\\AppData\\Local\\Temp\\round3_installed_w2i9ikdu\\installed_frame.stl"
+        ],
+        "n_parts": 1,
+        "checks": [
+          {
+            "name": "slot width 12.1-14.2 (bar 11.7)",
+            "ok": true,
+            "crit": true,
+            "detail": "12.4"
+          },
+          {
+            "name": "slot depth >= 23 (bar 24)",
+            "ok": true,
+            "crit": true,
+            "detail": "24.7"
+          },
+          {
+            "name": "slot engages bar (>=58, or open-ended >=40)",
+            "ok": true,
+            "crit": true,
+            "detail": "62.7 open=False"
+          },
+          {
+            "name": "grip 58-95 across, h 45-95",
+            "ok": false,
+            "crit": false,
+            "detail": "[116.0, 55.0, 46.0]"
+          },
+          {
+            "name": "supportless in some orientation (<8%)",
+            "ok": true,
+            "crit": false,
+            "detail": "0.0"
+          }
+        ],
+        "watertight": true,
+        "bbox": [
+          116.0,
+          55.0,
+          46.0
+        ],
+        "volume_cm3": 273.2,
+        "overhang_frac": 0.0,
+        "crit_pass": 3,
+        "crit_total": 3,
+        "success": true,
+        "fit_score": 88,
+        "printability": 100,
+        "coordinate_frame": "installed D0/DX/DY/DZ; cap face DZ=0"
+      }
+    },
+    "team_v3": {
+      "files": {
+        "tool_stl": {
+          "path": "experiments\\round3-t2\\arms\\team-v3\\cq-a-washer-filter-tool.stl",
+          "sha256": "39b305ae74ab71d95fcad4160b86d3202c5880dbc7741981a045fac9e5d889df",
+          "bytes": 571784
+        },
+        "tool_step": {
+          "path": "experiments\\round3-t2\\arms\\team-v3\\cq-a-washer-filter-tool.step",
+          "sha256": "ecafce833ab955e8f945b0c644388615806b6a9deda24d68f24b43b238accf21",
+          "bytes": 224847
+        },
+        "coupon_stl": {
+          "path": "experiments\\round3-t2\\arms\\team-v3\\cq-a-real-bar-engagement-coupon.stl",
+          "sha256": "2a08ab48731ad4e1a305cf06d4d45d736c0f1c22fd2f8519a58ed1a7805b0f84",
+          "bytes": 73884
+        }
+      },
+      "tool_stl_reimport": {
+        "watertight": true,
+        "components": 1,
+        "bbox_native_mm": [
+          84.0,
+          16.0,
+          64.39411771297455
+        ],
+        "volume_mm3": 30020.4673034109
+      },
+      "tool_step_fresh_import": {
+        "cadquery_valid": true,
+        "cadquery_volume_mm3": 30027.091375170454,
+        "cadquery_bbox_mm": [
+          84.01054358400509,
+          16.011658935552422,
+          64.40575339356793
+        ],
+        "tessellation_reimport_watertight": true,
+        "tessellation_components": 1,
+        "tessellation_volume_mm3": 30020.46730415519
+      },
+      "coupon_stl_reimport": {
+        "watertight": true,
+        "components": 1,
+        "bbox_mm": [
+          67.4000015258789,
+          21.5,
+          31.25000035762787
+        ],
+        "volume_mm3": 8921.791571960443
+      },
+      "historical_scorer_raw_export": {
+        "test": "T2",
+        "files": [
+          "C:\\github\\3D\\.claude\\worktrees\\3d-modeling-multi-agent-split-fd66c0\\experiments\\round3-t2\\arms\\team-v3\\cq-a-washer-filter-tool.stl"
+        ],
+        "n_parts": 1,
+        "checks": [
+          {
+            "name": "slot width 12.1-14.2 (bar 11.7)",
+            "ok": true,
+            "crit": true,
+            "detail": "14.2"
+          },
+          {
+            "name": "slot depth >= 23 (bar 24)",
+            "ok": true,
+            "crit": true,
+            "detail": "24.7"
+          },
+          {
+            "name": "slot engages bar (>=58, or open-ended >=40)",
+            "ok": true,
+            "crit": true,
+            "detail": "63.7 open=False"
+          },
+          {
+            "name": "grip 58-95 across, h 45-95",
+            "ok": true,
+            "crit": false,
+            "detail": "[84.0, 16.0, 64.4]"
+          },
+          {
+            "name": "supportless in some orientation (<8%)",
+            "ok": true,
+            "crit": false,
+            "detail": "0.071"
+          }
+        ],
+        "watertight": true,
+        "bbox": [
+          84.0,
+          16.0,
+          64.4
+        ],
+        "volume_cm3": 30.0,
+        "overhang_frac": 0.071,
+        "crit_pass": 3,
+        "crit_total": 3,
+        "success": true,
+        "fit_score": 100,
+        "printability": 79
+      },
+      "historical_scorer_controlled_installed_frame": {
+        "test": "T2",
+        "files": [
+          "C:\\Users\\ghsi0\\AppData\\Local\\Temp\\round3_installed_crzo0kdd\\installed_frame.stl"
+        ],
+        "n_parts": 1,
+        "checks": [
+          {
+            "name": "slot width 12.1-14.2 (bar 11.7)",
+            "ok": true,
+            "crit": true,
+            "detail": "14.2"
+          },
+          {
+            "name": "slot depth >= 23 (bar 24)",
+            "ok": true,
+            "crit": true,
+            "detail": "24.7"
+          },
+          {
+            "name": "slot engages bar (>=58, or open-ended >=40)",
+            "ok": true,
+            "crit": true,
+            "detail": "63.7 open=False"
+          },
+          {
+            "name": "grip 58-95 across, h 45-95",
+            "ok": true,
+            "crit": false,
+            "detail": "[84.0, 16.0, 64.4]"
+          },
+          {
+            "name": "supportless in some orientation (<8%)",
+            "ok": true,
+            "crit": false,
+            "detail": "0.071"
+          }
+        ],
+        "watertight": true,
+        "bbox": [
+          84.0,
+          16.0,
+          64.4
+        ],
+        "volume_cm3": 30.0,
+        "overhang_frac": 0.071,
+        "crit_pass": 3,
+        "crit_total": 3,
+        "success": true,
+        "fit_score": 100,
+        "printability": 79,
+        "coordinate_frame": "installed D0/DX/DY/DZ; cap face DZ=0"
+      }
+    }
+  }
+}
