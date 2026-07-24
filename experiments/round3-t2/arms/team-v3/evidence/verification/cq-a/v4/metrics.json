@@ -1,0 +1,91 @@
+{
+  "stl_sha256": "39b305ae74ab71d95fcad4160b86d3202c5880dbc7741981a045fac9e5d889df",
+  "watertight": true,
+  "components": 1,
+  "euler_number": 2,
+  "bounds_mm": [
+    [
+      -42.0,
+      -8.0,
+      0.6
+    ],
+    [
+      42.0,
+      8.0,
+      64.994118
+    ]
+  ],
+  "volume_mm3": 30020.467,
+  "f02_nominal_mm": [
+    62.0,
+    11.7,
+    24.0
+  ],
+  "cavity_section_mm": [
+    62.6,
+    12.3,
+    24.35
+  ],
+  "clearance_xy_per_side_mm": 0.3,
+  "top_clearance_mm": 0.35,
+  "cap_clearance_mm": 0.6,
+  "seated_f02_lattice_hits": 0,
+  "sweep_steps": 121,
+  "sweep_hits": 0,
+  "sweep_step_mm": 0.2,
+  "E01_grip_rim_radius_mm": {
+    "top": [
+      1.594322,
+      1.601218
+    ],
+    "right": [
+      1.594323,
+      1.602598
+    ],
+    "bottom": [
+      1.594323,
+      1.601218
+    ]
+  },
+  "E02_base_radius_mm": {
+    "lower": [
+      1.799517,
+      1.799519
+    ],
+    "interior": [
+      1.59957,
+      1.599573
+    ],
+    "upper": [
+      1.799517,
+      1.799519
+    ]
+  },
+  "E03_left_end_stop_radius_mm": [
+    0.8997,
+    0.8998
+  ],
+  "E04_right_end_stop_radius_mm": [
+    0.8997,
+    0.8998
+  ],
+  "E05_leadin_chamfer_leg_mm": 0.9,
+  "E06_cap_clearance_samples_mm": [
+    0.6,
+    0.6,
+    0.6
+  ],
+  "E07_bed_chamfer_leg_samples_mm": [
+    0.3,
+    0.3,
+    0.3
+  ],
+  "p_bed_native_y_mm": -8.0,
+  "p_bed_area_mm2": 4341.602,
+  "non_pbed_downface_area_mm2": 0.0,
+  "bridge_max_span_mm": 0.0,
+  "transition_excess_area_mm2": 0.0,
+  "support_generated_mm3": 0.0,
+  "support_contact_faces": 0,
+  "all_edge_rows": "E-01 through E-07 endpoint/interior rows independently inspected from re-imported mesh sections/rings"
+}
