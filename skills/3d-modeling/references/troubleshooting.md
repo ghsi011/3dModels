@@ -36,3 +36,29 @@ Shrinkage: scale per fdm-design §8's per-material table, or measure a test cube
   loose belts, debris in idlers, dry rails. Power off, move head by hand, feel for it.
 - Ghosting/ringing: belt tension (check quarterly) + input shaping.
 - Z-banding: bent lead screw, binding nut, temp fluctuation → clean/lube, PID tune.
+
+## Field failure: PETG-CF parts knocked off mid-print (nuc feeder, 2026-07)
+
+**Symptom:** part detached from textured PEI a few mm up, spaghetti; happened twice
+identically, at the same layer band. Filament was dried (12 h @65 °C, AMS at 21% RH) —
+so NOT moisture. The failure height matched the part's first heavy bridging layers.
+
+**Root causes (compound):**
+1. **Flat bridges + CF filament = nozzle strikes.** CF-filled PETG curls at bridge and
+   overhang edges; the nozzle clips the curled strands every pass and eventually shears
+   the part off. Repeatable failure at the bridge band is the signature.
+2. **PETG-CF grips textured PEI worse than plain PETG**, and Bambu Studio's `auto_brim`
+   frequently decides on NO brim — a tall part on a small/segmented footprint (spokes,
+   arms, narrow rings) then has no adhesion margin at all.
+3. **Long flat arms warp**: tips lift, nozzle taps them with big leverage at the ends.
+
+**Fixes that must travel together (design + slice):**
+- Design: never leave >8–10 mm flat down-facing bridges in CF materials. Corbel them —
+  45° fillets (fuse a 45°-rotated square prism along each supporting edge) shrink the
+  span without support material. Keep corbels clipped to where solid wall exists above.
+- Slice: force `brim_type: outer_only` (do not trust auto_brim), and halve
+  `bridge_speed` (X2D preset ships ["50","50","50","200"] per extruder variant — the
+  override must match that array shape).
+- Bed prep: wipe plate with IPA; glue stick adds margin for CF on textured PEI.
+- When several parts share a plate, one knock-off wrecks all of them — consider
+  printing the risky tall part alone first.

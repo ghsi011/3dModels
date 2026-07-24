@@ -8,7 +8,17 @@ MAIN nozzle, X2D 0.4 preset, 0.2 mm layers, **4 walls**, 30% gyroid, flow ×1.02
 (0.95→0.969), Textured PEI. Open → eyeball → slice; nothing to configure.
 Generated + self-verified by `make_feeder_3mf.py` (built from this machine's installed
 Studio 02.07.01.62 profiles). After import, glance at: filament = PETG-CF, walls = 4,
-infill = 30% gyroid, bed = Textured PEI.
+infill = 30% gyroid, bed = Textured PEI, **brim present around every part**.
+
+**⚠️ Lesson from two failed plates (2026-07-24):** the drip barrel got knocked off the
+bed at z≈4–5 mm — right at its window-roof bridging — twice, with dried filament.
+See `skills/3d-modeling/references/troubleshooting.md` ("PETG-CF parts knocked off").
+Countermeasures now baked in: **(a)** barrel v2 has 45° corbels under the window roofs
+(flat bridge spans cut from ~13 mm to <8 mm); **(b)** the 3MF forces a 5 mm outer brim
+(Studio's auto_brim had chosen none) and halves bridge speed to 25 mm/s. Before
+printing: wipe the plate with IPA; a glue-stick layer adds margin for CF on textured
+PEI. If it fails a third time, print the drip barrel alone first so a knock-off can't
+spaghetti the whole plate.
 
 PETG-CF notes: needs hardened nozzle — both X2D nozzles qualify. It's dark (indigo
 spool), so the "white/light halves solar gain" advice is lost — **shade or foil-wrap the

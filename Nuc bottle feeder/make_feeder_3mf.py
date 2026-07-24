@@ -136,6 +136,17 @@ PROCESS_OVERRIDES = {
     "sparse_infill_pattern": "gyroid",
     # The only plate this user owns.
     "curr_bed_type": "Textured PEI Plate",
+
+    # --- Print-failure hardening (2026-07-24, two knock-offs on the plate) ---
+    # PETG-CF grips textured PEI worse than plain PETG, and the drip barrel is
+    # a tall threaded cylinder on a small segmented footprint (4 spokes).
+    # Studio's default is auto_brim which gave it NO brim: force a 5 mm outer
+    # brim on everything.
+    "brim_type": "outer_only",
+    "brim_width": "5",
+    # PETG-CF curls at bridge edges and the nozzle then knocks parts off.
+    # Preset is ["50","50","50","200"] (per extruder variant): halve it.
+    "bridge_speed": ["25", "25", "25", "25"],
 }
 
 # Chamber / cooling is deliberately NOT overridden. The X2D advertises
