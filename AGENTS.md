@@ -19,6 +19,11 @@ single source of truth.)
   the photos/reference**, **feature positions measured from named datums**, measurement
   audit, printability + face audit — all run on the **exported STL re-imported**, not the
   in-memory model.
+- **Before finalizing STL and before slicing, run the pre-print validation checklist**
+  (`skills/3d-modeling/references/preflight-checklist.md`): DFAM/adhesion/overhang geometry,
+  material calibration, and the exact final-3MF settings. It exists because CAD-clean parts
+  still fail on the plate — see the PETG-CF knock-off case in
+  `skills/3d-modeling/references/troubleshooting.md`.
 - **Recreating a part from photos**: use the render-over-photo overlay loop
   (`skills/3d-modeling/references/cadquery-patterns.md`) — draw the model's boundaries on the
   photo and iterate. Overlays catch millimetre errors that side-by-side viewing misses.
