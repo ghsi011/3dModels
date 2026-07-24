@@ -19,8 +19,11 @@ single source of truth.)
 - Invoke solo explicitly with `/3d-modeling`. Invoke the team with `/3d-orchestrator` or
   “use the 3D team.” For normal new jobs, let the orchestrator decide.
 - Team agents communicate only through project contract files and source evidence, never
-  chat summaries. The required flow and templates are in
-  [`skills/team-design.md`](skills/team-design.md).
+  chat summaries. The required flow, role charters, and design rationale are in
+  [`skills/team-design.md`](skills/team-design.md); the **normative runtime contract and gate
+  schema** is [`skills/3d-modeling/references/team-contracts-v4.md`](skills/3d-modeling/references/team-contracts-v4.md)
+  — where the two disagree, v4 governs. **Team v4 is a guarded pilot** until the frozen
+  adoption regression passes; treat its gate results accordingly.
 - In Claude Code, keep orchestration in the main session or launch
   `claude --agent 3d-orchestrator`; nested Claude subagents cannot spawn specialists. In
   Codex, the root agent may dispatch the five slices directly. Runtime model selection is a
@@ -52,6 +55,18 @@ single source of truth.)
   photo and iterate. Overlays catch millimetre errors that side-by-side viewing misses.
 - **Known products** (phone, battery, SBC, appliance part): web-search the official specs and
   look for existing 3D models before measuring — then still confirm with photos + calipers.
+
+## Agent judgment vs software enforcement
+
+Agents own engineering decisions. Deterministic tools enforce contract structure, provenance,
+artifact identity, dependency freshness, resource limits, and repeatable measurements. Passing
+a software gate is necessary evidence, not proof of functional correctness.
+
+Concretely: a deterministic gate (schema/finite-number/hash/revision-binding/path-safety
+check, `team_preflight.py`, etc.) can tell you a contract is well-formed, an artifact matches
+the hash an agent bound to it, and a measured geometric predicate holds under the stated
+transform. It cannot tell you a part will fit, print, or survive its load — that remains an
+agent judgment call, informed by the gate's evidence but never substituted by it.
 
 ## Team invariants
 
