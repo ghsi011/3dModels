@@ -1,0 +1,81 @@
+{
+  "scope": "Independent artifact grade of frozen round2/team-v2; candidate directory was read-only.",
+  "candidate": "optimization/round2/team-v2",
+  "rubric_maximums": {
+    "hard_export_integrity": 20,
+    "dimensional_fidelity": 25,
+    "design_quality": 15,
+    "printability_process": 20,
+    "verification_evidence": 15,
+    "artifact_maintainability": 5
+  },
+  "score": {
+    "hard_export_integrity": 20,
+    "dimensional_fidelity": 20,
+    "design_quality": 10,
+    "printability_process": 13,
+    "verification_evidence": 12,
+    "artifact_maintainability": 5,
+    "total": 80,
+    "hard_cap": false,
+    "status": "Candidate export passes; final-print acceptance remains blocked by pending P2 slicer/support evidence and a fresh review of that evidence."
+  },
+  "baseline_comparison": {
+    "baseline_monolith_score": 62,
+    "baseline_team_score": 91,
+    "v2_delta_vs_monolith": 18,
+    "v2_delta_vs_baseline_team": -11,
+    "preregistered_minimum_score": 88,
+    "preregistered_minimum_met": false
+  },
+  "preregistration_targets": {
+    "critical_path_at_most_minutes": 35,
+    "critical_path": "1h 15m 35s",
+    "critical_path_seconds": 4535,
+    "critical_path_met": false,
+    "logged_commissions_at_most": 8,
+    "logged_commissions": 17,
+    "commission_target_met": false,
+    "fresh_verifier_commissions_target": 1,
+    "fresh_verifier_commissions_logged": 5,
+    "fresh_verifier_target_met": false,
+    "rejections": 4,
+    "zero_avoidable_rejection_loops_met": false,
+    "delivered_files_at_most": 43,
+    "delivered_files_excluding_caches": 30,
+    "delivered_files_target_met": true,
+    "delivered_bytes_at_most": 2068316,
+    "delivered_bytes_excluding_caches": 1519980,
+    "delivered_bytes_target_met": true,
+    "run_log_claimed_bytes": 1519907,
+    "independent_minus_logged_bytes": 73
+  },
+  "telemetry": {
+    "token_telemetry_exposed": false,
+    "tokens": "not exposed; no estimate was made from bytes, files, or commissions",
+    "auditable_proxies": {
+      "logged_commissions": 17,
+      "fresh_verifier_commissions": 5,
+      "rejections": 4,
+      "candidate_python_files": 6,
+      "candidate_python_lines": 531,
+      "candidate_python_bytes": 25663,
+      "canonical_contract_files": 7
+    }
+  },
+  "export_measurements": {
+    "stl_sha256": "255945baa7ab980fb6d43a092cb1a36307e09dd20a53b9c26e971f82f7905960",
+    "stl_reimport": {
+      "watertight": true,
+      "winding_consistent": true,
+      "components": 1,
+      "extents_mm": [76.2, 156.4458, 11.0],
+      "volume_mm3": 15856.857
+    },
+    "step_sha256": "e178a4d87b85988b3457e5c25f3e44c03c7016c5e9c20d551dd3fcdaeac88689",
+    "step_reimport": {
+      "valid": true,
+      "volume_mm3": 15858.722
+    }
+  }
+}
