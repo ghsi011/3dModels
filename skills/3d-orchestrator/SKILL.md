@@ -17,8 +17,9 @@ Specialists communicate through project files and source photos only, never chat
   and every current contract artifact in the project folder.
 - Write: `job_state.md` using the exact schema in
   [`../team-design.md`](../team-design.md#job-statemd).
-- Read and gate: `dimensions.md`, `print_plan.md`, `verification_report.md`, designer
-  outputs, and final print-prep files.
+- Read and gate: `dimensions.md`, `print_plan.md`, `candidate_readiness.md`,
+  `verification_report.md`, designer outputs, `final_print_prep.md`, and conditional
+  `final_prep_review.md`.
 - Housekeeping: the Notion Print Queue entry and physical-change git commits required by
   repository policy.
 - Never substitute a chat summary for a contract. Before every dispatch, tell the agent to
@@ -26,7 +27,7 @@ Specialists communicate through project files and source photos only, never chat
 
 ## Required reading
 
-1. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md).
+1. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md).
 2. For a solo job only, read and run [`../3d-modeling/SKILL.md`](../3d-modeling/SKILL.md)
    unchanged.
 
@@ -41,7 +42,8 @@ Specialists communicate through project files and source photos only, never chat
    consequences, multi-colour alignment, difficult DFM, or user-requested team/fresh review.
 4. In pipeline mode, advance only through:
    `INTAKE -> METROLOGY -> REFERENCE_BUILD -> REFERENCE_ACCEPTANCE -> PRINT_PLAN ->
-   CANDIDATE_BUILD -> INDEPENDENT_VERIFICATION -> PRINT_PREP -> DELIVERY`.
+   CANDIDATE_BUILD -> INDEPENDENT_VERIFICATION -> PRINT_PREP ->
+   [FINAL_PREP_REVIEW when required] -> DELIVERY`.
 5. Dispatch the metrologist to create `dimensions.md`; gate on complete datum/provenance,
    confidence grades, resolved blockers, and one blind-build-completeness row for every
    visible feature before spending a reference build.
@@ -49,19 +51,31 @@ Specialists communicate through project files and source photos only, never chat
    again to overlay-accept it. A failure returns to `METROLOGY`: fix the sheet, not the
    reference model.
 7. Dispatch the print engineer for the pre-design `print_plan.md`; gate on orientation,
-   material, nozzle-linked limits, support budget, chamfers, and colour constraints.
+   material, nozzle-linked limits, support budget, chamfers, colour constraints, and a
+   frozen `required_now` / `deferred_owner` / `final_gate` scope for every geometry rule.
 8. Dispatch candidate designer(s) against the sheet, accepted reference, and print plan.
    Require a hash-bound `candidate_readiness.md` with `status: READY` from the exported STL
-   before verifier dispatch. `NOT_READY` remains inside the same designer commission. Only
-   CadQuery candidates may run in parallel. Serialize all FreeCAD work through one instance.
+   before verifier dispatch, including complete edge/comfort and support-sensitivity
+   preflight tables. `NOT_READY` remains inside the same designer commission. Only CadQuery
+   candidates may run in parallel. Serialize all FreeCAD work through one instance.
 9. Dispatch a fresh verifier that was never a designer and has no candidate-author history.
    Treat designer readiness as untrusted and require all seven checks. A `REJECT` returns to
    `CANDIDATE_BUILD` with the concrete defect list; never ask the verifier to fix it.
-10. After `PASS`, dispatch the print engineer for coupon, slicing, print order, and field
-    test details. Return a failed physical test to the owning upstream contract.
-11. Deliver only when the exported/re-imported artifacts pass all gates, the queue is
-    current, and the meaningful physical iteration is committed.
-12. Advance from a commission as soon as its required file receipt is complete and valid;
+10. After candidate `PASS`, dispatch the print engineer for coupon, slicing, print order,
+    and field-test details in `final_print_prep.md`. A support-free plan with no deferred
+    visual predicate may finish `COMPLETE`. When the plan relies on support contacts,
+    toolpaths, or another slicer-dependent visual predicate, require `READY_FOR_REVIEW` and
+    dispatch the verifier to write `final_prep_review.md` before delivery.
+11. Enforce the plan-revision rule in the shared v3 contract. Any changed candidate
+    predicate requires a new readiness receipt and a new fresh full seven-check verifier;
+    adding only bound P2 evidence does not.
+12. If plan-required native slicer evidence cannot be produced, stop at
+    `BLOCKED_NATIVE_SLICER` with hashes and the missing capability. Never label it Ready to
+    Print. A non-native exception requires explicit user approval.
+13. Deliver only when the exported/re-imported artifacts pass all gates, final print prep is
+    `COMPLETE` or has `FINAL_PRINT_PASS`, the queue is current, and the meaningful physical
+    iteration is committed.
+14. Advance from a commission as soon as its required file receipt is complete and valid;
     do not wait for a chat summary. Record a realistic minute budget per dispatch and ask
     for an exact blocker when it expires.
 

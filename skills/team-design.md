@@ -1475,8 +1475,9 @@ real defects: an incomplete camera datum sheet, a closed installation face, and 
 model-to-printer orientation. The controls remain correct; the preventable work before
 those controls is optimized.
 
-Runtime v2 uses the compact schemas in
-[`3d-modeling/references/team-contracts-v2.md`](3d-modeling/references/team-contracts-v2.md).
+The compact runtime schemas introduced for v2 now live, with the evidence-driven v3
+amendments, in
+[`3d-modeling/references/team-contracts-v3.md`](3d-modeling/references/team-contracts-v3.md).
 They retain the exact semantic fields in section 6 and all 53 ownership assignments while
 removing repeated prose from runtime contexts.
 
@@ -1507,3 +1508,97 @@ verifier when the readiness gate works; no avoidable reference or candidate reje
 at most eight logged commissions; at most 35 minutes critical path; and at least 50% fewer
 contract/evidence files or bytes. Per-agent tokens remain reported only when the runtime
 exposes them; file bytes and commission count are proxies, never token estimates.
+
+## 16. Runtime optimization v3
+
+### Round-2 result and reason for another revision
+
+The preregistered Pixel v2 rerun did reduce artifact fan-out, but it failed the adoption
+thresholds:
+
+| Metric | Target | Round 2 |
+|---|---:|---:|
+| Independent score | at least 88 | 80 |
+| Critical path | at most 35 min | 1h 15m 35s |
+| Logged commissions | at most 8 | 17 |
+| Fresh verifier contexts | 1 unless corrected | 5 |
+| Delivered footprint | at most 43 files / 2,068,316 bytes | 30 files / 1,519,980 bytes |
+
+The smaller footprint is retained. The score/time loss came from four concrete loops:
+
+1. readiness did not inventory or measure every exposed comfort/functional edge;
+2. adding the missing round exposed a print-orientation support conflict that readiness had
+   not quantified;
+3. a print-plan revision confused current candidate evidence with later slicer evidence; and
+4. post-verification print prep documented native support proof as pending while the job was
+   marked delivered.
+
+Fresh verification correctly found all four. V3 therefore strengthens deterministic
+pre-dispatch evidence and phase ordering; it does not reduce verifier independence, visual
+inspection, or any of the seven checks.
+
+### V3 contract and state-machine amendment
+
+The exact v3 templates are in
+[`3d-modeling/references/team-contracts-v3.md`](3d-modeling/references/team-contracts-v3.md).
+They add:
+
+- `required_now`, `deferred_owner`, and `final_gate` to each print-plan geometry rule;
+- an Edge ID inventory with re-imported-STL endpoint/interior sampling;
+- a support-sensitivity table that classifies and quantifies every out-of-limit region;
+- `final_print_prep.md` for actual coupon/slicer/field-test evidence; and
+- conditional `final_prep_review.md` only when the accepted plan depends on visual
+  support-contact or toolpath evidence.
+
+The orchestrator state tail is:
+
+```text
+CANDIDATE_BUILD
+  -> INDEPENDENT_VERIFICATION
+  -> PRINT_PREP
+  -> [FINAL_PREP_REVIEW only for slicer-dependent visual predicates]
+  -> DELIVERY
+```
+
+A support-free part with zero out-of-limit regions stays on the compact path and does not
+create a native slicer project solely for ceremony. A design that relies on selected supports
+must provide the bound contact/toolpath evidence and independent final-prep review. If a
+plan-required native slicer is unavailable, the state is `BLOCKED_NATIVE_SLICER`, never
+Ready to Print.
+
+### Revision and rejection rules
+
+- A failed `required_now` rule cannot be moved downstream for the same candidate.
+- A plan revision that changes any candidate predicate requires a new readiness receipt and
+  a new fresh full seven-check verifier, even if STL bytes did not change.
+- Adding only post-verification artifacts under the unchanged accepted plan requires the
+  applicable final-prep review, not another seven-check run.
+- Every changed STL hash still requires a new fresh designer-distinct verifier context.
+- The designer's edge/support preflight remains non-acceptance; the verifier independently
+  repeats applicable edge sections and all printability predicates.
+
+### Ownership and migration
+
+No sixth role was added. The metrologist still owns truth and blind acceptance; the designer
+owns source and non-acceptance readiness; the verifier owns fresh candidate acceptance and,
+when required, independent final-prep inspection; the print engineer owns print rules and P2
+evidence; the orchestrator owns file gates and delivery state. The 53-rule coverage table in
+section 10 is unchanged and still gives each monolith obligation exactly one owner.
+
+The shared runtime reference moved from `team-contracts-v2.md` to
+`team-contracts-v3.md`; all five slices point to that one shared copy. The monolith
+`3d-modeling/SKILL.md`, its solo workflow, backend patterns, and all original shared
+references remain unchanged.
+
+### V3 adoption hypotheses
+
+- no verifier rejection for an uninventoried exposed edge, source-only radius claim,
+  unclassified support footprint, or contract-order error;
+- one fresh candidate verifier on the normal one-candidate path, at most two after one real
+  geometry correction;
+- at most eight specialist commissions and 30 minutes on the compact T2 regression;
+- hard functional/export pass, total score at least 85 and not below the monolith arm;
+- visual plus DFM score at least 22/30 and within two points of the monolith arm;
+- at most 35 delivered files and 1 MB for the smaller T2 job; and
+- token counts reported only if runtime telemetry exposes them, with commissions/files/bytes
+  kept as explicitly non-token proxies.

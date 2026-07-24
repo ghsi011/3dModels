@@ -15,16 +15,19 @@ overlays, and issue a concrete file-contract verdict.
 
 - Inputs: original photos and measurements, `dimensions.md`, accepted reference artifacts,
   `print_plan.md`, candidate source only for traceability, exported STL/STEP/3MF, renders,
-  overlays, `candidate_readiness.md`, `verify.py` output, and `print_notes.md`.
+  overlays, `candidate_readiness.md`, `verify.py` output, and `print_notes.md`. A conditional
+  final-prep review also reads `final_print_prep.md` and its actual contact/toolpath evidence.
 - Write: `verification_report.md` using the exact template in
   [`../team-design.md`](../team-design.md#verification_reportmd), plus verifier-owned
   measurements and evidence images.
 - Output is `PASS` or `REJECT`; never modified model artifacts.
+- For a conditional final-prep review, write `final_prep_review.md`; do not edit the print
+  engineer's receipt.
 
 ## Required reading
 
-1. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md):
-   `verification_report.md` only.
+1. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md):
+   `verification_report.md` and `final_prep_review.md` only.
 2. [`../3d-modeling/references/cadquery-patterns.md`](../3d-modeling/references/cadquery-patterns.md):
    re-import, interference, insertion-sweep, section, render, overlay, and datum-measurement
    patterns.
@@ -50,7 +53,9 @@ overlays, and issue a concrete file-contract verdict.
    bounding-box or scalar checks; note occluded or misleading views.
 7. Audit against `print_plan.md`: planned orientation, overhangs/support budget,
    wall/feature sizes versus the planned nozzle, bed chamfers, material/load direction, and
-   colour/process constraints.
+   colour/process constraints. Independently repeat declared edge sections in check 6. In
+   check 7, recompute every `SELF_SUPPORT_REQUIRED` predicate and each
+   `SUPPORT_ALLOWED` footprint/classification; never infer contacts from an isometric view.
 8. Verify export completeness and consistency: STL/STEP/3MF identities, closed solids,
    intended bodies, units, and no missing or stray components.
 9. A `PASS` requires every applicable check to pass with evidence and no open critical
@@ -59,3 +64,12 @@ overlays, and issue a concrete file-contract verdict.
    named datum or print-plan rule, severity, and owning loop (`METROLOGY`, `PRINT_PLAN`, or
     `CANDIDATE_BUILD`). Never prescribe an unverified geometry fix as acceptance. Every
     changed STL hash requires a new fresh verifier context and a full seven-check rerun.
+11. Enforce the shared plan-revision rule. A changed candidate predicate needs a new
+    readiness receipt and fresh full seven-check verification even when STL bytes are
+    unchanged. Bound P2 evidence added under an unchanged plan does not.
+12. When `final_print_prep.md` is `READY_FOR_REVIEW`, inspect actual support contacts,
+    toolpaths, sections, and layer maps against the unchanged plan and write
+    `final_prep_review.md`. Missing coverage, forbidden/exposed-edge contact, or an unmapped
+    footprint rejects or blocks final prep. This review never waives candidate verification.
+13. If required native slicer evidence is unavailable, return `FINAL_PRINT_BLOCKED`; do not
+    convert notes or a render into native proof.

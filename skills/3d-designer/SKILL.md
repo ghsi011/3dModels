@@ -35,7 +35,7 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
 3. Always: [`../3d-modeling/references/fdm-design.md`](../3d-modeling/references/fdm-design.md).
 4. Only when the part uses a standard mechanism:
    [`../3d-modeling/references/mechanisms.md`](../3d-modeling/references/mechanisms.md).
-5. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md):
+5. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md):
    `candidate_readiness.md` only.
 
 ## Checklist
@@ -57,11 +57,16 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
    interference; full insertion/travel sweep; installed-coordinate section proving the
    open/closed architecture; exact print-plan transform with named bed face at Z=0;
    unsupported-roof and critical-wall floors; required source/STEP/renders and hashes.
-8. Provide `verify.py` and `candidate_readiness.md` as useful designer evidence, but mark
+8. Before declaring `READY`, execute the v3 edge/comfort preflight for every plan-named
+   exposed boundary and the support-sensitivity preflight for every transformed downface,
+   roof, bridge, and layer-transition rule. Measure the re-imported STL, record every
+   nonzero footprint/interval, and correct failures inside this commission. These are
+   deterministic self-checks, never acceptance.
+9. Provide `verify.py` and `candidate_readiness.md` as useful designer evidence, but mark
    both `DESIGNER SELF-CHECK — NON-ACCEPTANCE`. Never claim the Phase-4 gate passed.
-9. Record source parameters, orientation, material assumptions, supports, weak directions,
+10. Record source parameters, orientation, material assumptions, supports, weak directions,
    and coupon region in `print_notes.md`.
-10. When a verifier rejects, change only the owned geometry, regenerate every derived
-   artifact, and cite each resolved defect in the next handoff.
-11. Never run two FreeCAD designer instances concurrently. Separate CadQuery candidate
+11. When a verifier rejects, change only the owned geometry, regenerate every derived
+    artifact, and cite each resolved defect in the next handoff.
+12. Never run two FreeCAD designer instances concurrently. Separate CadQuery candidate
     folders may run in parallel and must not overwrite shared contracts.

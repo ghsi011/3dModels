@@ -24,7 +24,7 @@ render-over-photo overlays.
 
 ## Required reading
 
-1. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md):
+1. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md):
    `dimensions.md` only.
 2. [`../3d-modeling/references/cadquery-patterns.md`](../3d-modeling/references/cadquery-patterns.md):
    datum discipline, render/overlay, inspection, and image-alignment patterns only.

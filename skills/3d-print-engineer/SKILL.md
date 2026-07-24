@@ -21,12 +21,12 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
   `print_notes.md`.
 - Post-verification outputs: finalized `print_notes.md`, coupon source/export when
   fit-critical, slicing notes/profile, print order, inspection and field-test protocol, and
-  failed-print evidence when applicable.
+  failed-print evidence when applicable. Summarize the gate in `final_print_prep.md`.
 
 ## Required reading
 
-1. [`../3d-modeling/references/team-contracts-v2.md`](../3d-modeling/references/team-contracts-v2.md):
-   `print_plan.md` only.
+1. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md):
+   `print_plan.md` and `final_print_prep.md` only.
 2. [`../3d-modeling/references/fdm-design.md`](../3d-modeling/references/fdm-design.md).
 3. [`../3d-modeling/references/printers.md`](../3d-modeling/references/printers.md).
 4. [`../3d-modeling/references/materials.md`](../3d-modeling/references/materials.md).
@@ -47,7 +47,9 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
 3. State minimum walls, pins, holes, gaps, embossed/debossed features, tolerance/shrink
    allowances, and load-path rules tied to the planned nozzle/material/profile.
 4. Set the support budget and forbidden support-contact faces; require bed-facing
-   elephant-foot chamfers where fit geometry approaches the plate.
+   elephant-foot chamfers where fit geometry approaches the plate. Classify each printability
+   rule as `SELF_SUPPORT_REQUIRED` or `SUPPORT_ALLOWED`, and freeze its `required_now`,
+   `deferred_owner`, and `final_gate` fields before candidate design.
 5. Define multi-colour/body/nozzle constraints and purge/contamination risks.
 6. Define the fit coupon region and pass/fail measurements before the designer begins.
    Default to one multi-lane coupon STL; add files only for physically disjoint interfaces.
@@ -61,7 +63,18 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
    material is PLA only when it does not invalidate shrink/thermal behavior.
 3. Give slicer/profile, orientation, supports, brims, seam, wall/top/bottom, infill,
    temperature/drying, colour/nozzle assignment, and export/import notes.
-4. State print order and dimensional/visual inspection after the coupon and final print.
-5. Define field-test procedure, acceptance thresholds, safety limits, and rollback.
-6. For failure forensics, preserve photos/settings/measurements, identify whether truth,
+4. For every `SUPPORT_ALLOWED` footprint, produce the plan-required native slicer project,
+   underside contact-selection view, section/toolpath view per failing interval, and
+   footprint-to-contact/layer map. Confirm transform, material, nozzle, layer, line width,
+   gap, and interface settings. Support-free plans with zero out-of-limit regions do not
+   need a native project solely for ceremony.
+5. Write `final_print_prep.md`: use `COMPLETE` only when no deferred visual review remains,
+   or `READY_FOR_REVIEW` when support/contact/toolpath evidence needs verifier review.
+6. If plan-required native slicer evidence cannot be produced, write
+   `BLOCKED_NATIVE_SLICER` with command/version, candidate and plan hashes, missing
+   capability, and required action. A `NON_NATIVE` fallback stays blocked without explicit
+   user approval.
+7. State print order and dimensional/visual inspection after the coupon and final print.
+8. Define field-test procedure, acceptance thresholds, safety limits, and rollback.
+9. For failure forensics, preserve photos/settings/measurements, identify whether truth,
    geometry, material, slicing, or machine owns the failure, and route to that contract.
