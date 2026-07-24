@@ -26,7 +26,7 @@ overlays, and issue a concrete file-contract verdict.
 
 ## Required reading
 
-1. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md):
+1. [`../3d-modeling/references/team-contracts-v4.md`](../3d-modeling/references/team-contracts-v4.md):
    `verification_report.md` and `final_prep_review.md` only.
 2. [`../3d-modeling/references/cadquery-patterns.md`](../3d-modeling/references/cadquery-patterns.md):
    re-import, interference, insertion-sweep, section, render, overlay, and datum-measurement
@@ -37,6 +37,8 @@ overlays, and issue a concrete file-contract verdict.
 5. Shared tools:
    [`../../experiments/overlay_photo.py`](../../experiments/overlay_photo.py) and
    [`../../experiments/verify_visual.py`](../../experiments/verify_visual.py).
+6. Shared deterministic support predicate:
+   [`../3d-modeling/scripts/team_preflight.py`](../3d-modeling/scripts/team_preflight.py).
 
 ## Checklist
 
@@ -55,7 +57,9 @@ overlays, and issue a concrete file-contract verdict.
    wall/feature sizes versus the planned nozzle, bed chamfers, material/load direction, and
    colour/process constraints. Independently repeat declared edge sections in check 6. In
    check 7, recompute every `SELF_SUPPORT_REQUIRED` predicate and each
-   `SUPPORT_ALLOWED` footprint/classification; never infer contacts from an isometric view.
+   `SUPPORT_ALLOWED` footprint/classification. Rerun shared `team_preflight.py
+   support-audit` into verifier-owned JSON for every support rule; never trust the designer's
+   JSON or infer contacts from an isometric view.
 8. Verify export completeness and consistency: STL/STEP/3MF identities, closed solids,
    intended bodies, units, and no missing or stray components.
 9. A `PASS` requires every applicable check to pass with evidence and no open critical
@@ -73,3 +77,6 @@ overlays, and issue a concrete file-contract verdict.
     footprint rejects or blocks final prep. This review never waives candidate verification.
 13. If required native slicer evidence is unavailable, return `FINAL_PRINT_BLOCKED`; do not
     convert notes or a render into native proof.
+14. Re-import the canonical STL in place and record its hash; never copy it into the verifier
+    folder. For a rejection, retain only the report, metrics, hashes, and defect-specific
+    visual in addition to canonical artifacts.

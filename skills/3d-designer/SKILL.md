@@ -35,8 +35,10 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
 3. Always: [`../3d-modeling/references/fdm-design.md`](../3d-modeling/references/fdm-design.md).
 4. Only when the part uses a standard mechanism:
    [`../3d-modeling/references/mechanisms.md`](../3d-modeling/references/mechanisms.md).
-5. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md):
+5. [`../3d-modeling/references/team-contracts-v4.md`](../3d-modeling/references/team-contracts-v4.md):
    `candidate_readiness.md` only.
+6. Shared deterministic gate:
+   [`../3d-modeling/scripts/team_preflight.py`](../3d-modeling/scripts/team_preflight.py).
 
 ## Checklist
 
@@ -57,16 +59,20 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
    interference; full insertion/travel sweep; installed-coordinate section proving the
    open/closed architecture; exact print-plan transform with named bed face at Z=0;
    unsupported-roof and critical-wall floors; required source/STEP/renders and hashes.
-8. Before declaring `READY`, execute the v3 edge/comfort preflight for every plan-named
+8. Before declaring `READY`, execute the v4 edge/comfort preflight for every plan-named
    exposed boundary and the support-sensitivity preflight for every transformed downface,
    roof, bridge, and layer-transition rule. Measure the re-imported STL, record every
    nonzero footprint/interval, and correct failures inside this commission. These are
    deterministic self-checks, never acceptance.
-9. Provide `verify.py` and `candidate_readiness.md` as useful designer evidence, but mark
+9. Write the machine-readable files required by the v4 contract. Run shared
+   `team_preflight.py support-audit` for every support rule and `validate-receipts` for the
+   complete Edge ID/support-rule sets. Markdown readiness may say `READY` only when the
+   shared validator exits zero and reports `PASS`. After a correction, rerun every row.
+10. Provide `verify.py` and `candidate_readiness.md` as useful designer evidence, but mark
    both `DESIGNER SELF-CHECK — NON-ACCEPTANCE`. Never claim the Phase-4 gate passed.
-10. Record source parameters, orientation, material assumptions, supports, weak directions,
+11. Record source parameters, orientation, material assumptions, supports, weak directions,
    and coupon region in `print_notes.md`.
-11. When a verifier rejects, change only the owned geometry, regenerate every derived
+12. When a verifier rejects, change only the owned geometry, regenerate every derived
     artifact, and cite each resolved defect in the next handoff.
-12. Never run two FreeCAD designer instances concurrently. Separate CadQuery candidate
+13. Never run two FreeCAD designer instances concurrently. Separate CadQuery candidate
     folders may run in parallel and must not overwrite shared contracts.

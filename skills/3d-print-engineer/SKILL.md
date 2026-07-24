@@ -25,7 +25,7 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
 
 ## Required reading
 
-1. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md):
+1. [`../3d-modeling/references/team-contracts-v4.md`](../3d-modeling/references/team-contracts-v4.md):
    `print_plan.md` and `final_print_prep.md` only.
 2. [`../3d-modeling/references/fdm-design.md`](../3d-modeling/references/fdm-design.md).
 3. [`../3d-modeling/references/printers.md`](../3d-modeling/references/printers.md).
@@ -55,6 +55,9 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
    Default to one multi-lane coupon STL; add files only for physically disjoint interfaces.
 7. Record assumptions and approval state in `print_plan.md`; unresolved manufacturing
    blockers stop candidate design.
+8. Write `print_plan_checks.json` as the exact machine-readable projection of every plan
+   Edge ID and support rule. The Markdown and JSON ID sets, transforms, thresholds, and
+   dispositions must agree before candidate dispatch.
 
 ### Post-verification
 

@@ -1477,7 +1477,7 @@ those controls is optimized.
 
 The compact runtime schemas introduced for v2 now live, with the evidence-driven v3
 amendments, in
-[`3d-modeling/references/team-contracts-v3.md`](3d-modeling/references/team-contracts-v3.md).
+[`3d-modeling/references/team-contracts-v4.md`](3d-modeling/references/team-contracts-v4.md).
 They retain the exact semantic fields in section 6 and all 53 ownership assignments while
 removing repeated prose from runtime contexts.
 
@@ -1539,8 +1539,8 @@ inspection, or any of the seven checks.
 
 ### V3 contract and state-machine amendment
 
-The exact v3 templates are in
-[`3d-modeling/references/team-contracts-v3.md`](3d-modeling/references/team-contracts-v3.md).
+The current templates, including the later executable v4 amendment, are in
+[`3d-modeling/references/team-contracts-v4.md`](3d-modeling/references/team-contracts-v4.md).
 They add:
 
 - `required_now`, `deferred_owner`, and `final_gate` to each print-plan geometry rule;
@@ -1585,8 +1585,8 @@ when required, independent final-prep inspection; the print engineer owns print 
 evidence; the orchestrator owns file gates and delivery state. The 53-rule coverage table in
 section 10 is unchanged and still gives each monolith obligation exactly one owner.
 
-The shared runtime reference moved from `team-contracts-v2.md` to
-`team-contracts-v3.md`; all five slices point to that one shared copy. The monolith
+The shared runtime reference moved from `team-contracts-v2.md` through v3 to the current
+`team-contracts-v4.md`; all five slices point to that one shared copy. The monolith
 `3d-modeling/SKILL.md`, its solo workflow, backend patterns, and all original shared
 references remain unchanged.
 
@@ -1602,3 +1602,70 @@ references remain unchanged.
 - at most 35 delivered files and 1 MB for the smaller T2 job; and
 - token counts reported only if runtime telemetry exposes them, with commissions/files/bytes
   kept as explicitly non-token proxies.
+
+## 17. Runtime optimization v4
+
+### Round-3 result
+
+The T2-style regression proved the architecture's quality and the prose-only readiness
+limit:
+
+| Metric | Monolith | Team v3 |
+|---|---:|---:|
+| Independent score | 86 | 93 |
+| Functional/export hard gate | pass | pass |
+| Critical path | 6m00s | 74m18s |
+| Specialist commissions | 1 | 13 |
+| Fresh verifier contexts / correction loops | 0 / 0 | 4 / 3 |
+| Footprint excluding caches | 12 files / 451,351 bytes | 61 files / 3,660,471 bytes |
+
+Fresh verifiers caught a 1,112.5 mm² print-orientation face error and then two separately
+missed exposed-edge defects. Each was real and the final v3 artifact scored higher than the
+monolith, so acceptance remains correct. The failure was that the designer and verifier
+implemented the same written predicates differently, and the readiness gate could omit Edge
+IDs while still saying `READY`.
+
+### Executable shared gate
+
+V4 adds
+[`3d-modeling/scripts/team_preflight.py`](3d-modeling/scripts/team_preflight.py) and the
+machine-readable `print_plan_checks.json` / `candidate_preflight.json` contracts in
+[`team-contracts-v4.md`](3d-modeling/references/team-contracts-v4.md).
+
+- The print engineer owns the complete Edge ID and support-rule sets.
+- The shared `support-audit` command transforms the canonical STL into printer coordinates
+  and measures non-bed downward area with the exact plan threshold.
+- The shared `validate-receipts` command recomputes file hashes, rejects missing/extra Edge
+  IDs or support rules, checks every numeric radius sample, and validates support-audit
+  provenance and thresholds.
+- The designer must obtain an executable `PASS`, then the orchestrator reruns that command
+  before verifier dispatch.
+- The fresh verifier independently executes the same repository-owned geometric predicate
+  into verifier-owned output and still reruns all seven checks and actual visual inspection.
+
+Shared code aligns the question being measured; it does not share context, designer results,
+or acceptance authority. The designer's result remains `NON-ACCEPTANCE`.
+
+### Evidence compaction
+
+Verifiers re-import the canonical STL in place and bind its hash; they never copy it into
+their evidence folder. Rejections preserve a report, numeric metrics, hashes, and the
+defect-specific visual, not another STL or unchanged full render set. A later correction
+reruns the full Edge ID/support set inside the existing designer commission so defects are
+not fixed one at a time.
+
+### V4 adoption hypothesis
+
+On the same frozen T2-style common package, a clean v4 team-only rerun must:
+
+- preserve a score of at least 90, the hard functional gate, all five role gates, the blind
+  overlay, one real coupon, and one fresh all-seven visual verifier;
+- complete in exactly seven normal-path specialist commissions with zero verifier
+  rejections;
+- finish in at most 35 minutes, recognizing that seven mandatory file-grounded commissions
+  cannot match a one-context six-minute solo run;
+- deliver at most 35 non-cache files and 1,000,000 bytes;
+- have both designer and verifier shared support audits report zero out-of-limit area and
+  cover the identical complete Edge ID set; and
+- keep token telemetry honest: report it only when exposed and use operational proxies only
+  as non-token evidence.

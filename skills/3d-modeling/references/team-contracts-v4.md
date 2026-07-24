@@ -1,4 +1,4 @@
-# Team pipeline runtime contracts v3
+# Team pipeline runtime contracts v4
 
 This is the compact runtime schema for the five-role pipeline. It preserves the semantic
 fields and gates in `skills/team-design.md` while avoiding rereading the full architecture
@@ -19,7 +19,7 @@ Rules:
 ```markdown
 ---
 contract: job-state
-contract_version: 3
+contract_version: 4
 job_id: <slug>
 revision: <integer>
 owner: orchestrator
@@ -62,7 +62,7 @@ multi-colour alignment, or parallel candidates. Both profiles run the same gates
 ```markdown
 ---
 contract: dimensions
-contract_version: 3
+contract_version: 4
 job_id: <slug>
 revision: <integer>
 owner: metrologist
@@ -106,7 +106,7 @@ handed, load, and clearance features are functional.
 ```markdown
 ---
 contract: print-plan
-contract_version: 3
+contract_version: 4
 job_id: <slug>
 revision: <integer>
 owner: print-engineer
@@ -163,6 +163,40 @@ region, exact transform/nozzle/line-width/layer range, quantified footprint or i
 one permitted nonfunctional contact class, enumerated forbidden faces, and named post-print
 artifacts. No unplanned region may become support-allowed after it fails verification.
 
+The print engineer also writes `print_plan_checks.json` with every Edge ID and support rule.
+This file is the machine-readable projection of the accepted Markdown plan, not a second
+source of requirements:
+
+```json
+{
+  "schema_version": 4,
+  "candidate_predicate_revision": 1,
+  "edges": [
+    {
+      "id": "E-01",
+      "min_radius_mm": 0.4,
+      "max_radius_mm": null,
+      "samples_required": 3
+    }
+  ],
+  "support_rules": [
+    {
+      "id": "S-01",
+      "disposition": "SELF_SUPPORT_REQUIRED",
+      "model_to_printer_matrix": [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]],
+      "bed_z_mm": 0,
+      "bed_tolerance_mm": 0.05,
+      "downward_normal_z_max": -0.70710678,
+      "max_out_of_limit_area_mm2": 0
+    }
+  ]
+}
+```
+
+Use `allowed_sharp: true` only with `allowed_sharp_reason`. A `SUPPORT_ALLOWED` row also
+names `allowed_contact_class` and forbidden faces in the Markdown plan. The print engineer
+must make the Edge ID and support-rule ID sets complete before candidate CAD.
+
 ## `candidate_readiness.md`
 
 This is designer-owned dispatch evidence. It is never acceptance and never substitutes for
@@ -171,7 +205,7 @@ fresh verification.
 ```markdown
 ---
 contract: candidate-readiness
-contract_version: 3
+contract_version: 4
 job_id: <slug>
 candidate_id: <id>
 owner: cad-designer
@@ -215,6 +249,26 @@ updated_utc: <iso-8601>
 The orchestrator recomputes presence and hashes. `NOT_READY` stays inside the same designer
 commission until corrected; no verifier is dispatched.
 
+The designer also writes `candidate_preflight.json`, one shared support-audit JSON per
+support rule, and `candidate_preflight_validation.json`. It must run:
+
+```text
+python skills/3d-modeling/scripts/team_preflight.py support-audit \
+  --stl <candidate.stl> --plan print_plan_checks.json --rule-id <S-ID> \
+  --output <S-ID>-support-audit.json
+
+python skills/3d-modeling/scripts/team_preflight.py validate-receipts \
+  --stl <candidate.stl> --plan print_plan_checks.json \
+  --readiness candidate_preflight.json \
+  --output candidate_preflight_validation.json
+```
+
+`candidate_preflight.json` binds the STL and plan-check hashes, contains exactly every plan
+Edge ID with numeric `samples_mm`, method, and evidence, and exactly every support-rule ID
+with its shared audit path. The validator must exit zero and report `PASS` before Markdown
+readiness may say `READY`. After any correction, rerun the full Edge ID and support-rule
+sets, not only the last reported defect.
+
 Give every opening boundary, protective lip, exterior user-touch boundary, removal/grip edge,
 and plan-named exposed edge an Edge ID. Classify it as `EXPOSED_FUNCTIONAL`,
 `EXPOSED_COMFORT`, `HIDDEN`, `BED_CONTACT`, or `PERMITTED_SUPPORT_CONTACT`. An exposed edge
@@ -229,7 +283,7 @@ verifier independently repeats the applicable sections.
 ```markdown
 ---
 contract: verification-report
-contract_version: 3
+contract_version: 4
 job_id: <slug>
 revision: <integer>
 owner: verifier
@@ -276,6 +330,16 @@ recomputes every `SELF_SUPPORT_REQUIRED` predicate and every `SUPPORT_ALLOWED`
 footprint/classification. Visual inspection, not an isometric scalar claim, establishes
 whether a support contact class is plausible.
 
+The verifier reruns `team_preflight.py support-audit` into verifier-owned JSON for every
+support rule and independently checks that its edge evidence covers the exact plan Edge ID
+set. Shared code standardizes the geometric predicate; a fresh context, fresh execution,
+fresh visual inspection, and independent measurements preserve verifier independence.
+
+Do not copy the canonical candidate STL into verifier folders. Re-import it in place and
+record its hash. A rejected run retains its report, metrics, the defect-specific visual, and
+source/output hashes; it does not duplicate unchanged full render sets or exports. A passing
+run retains the canonical full report and only verifier-owned visuals that add evidence.
+
 ## Plan-revision rule
 
 A plan revision requires a new candidate-readiness receipt and a new fresh full seven-check
@@ -295,7 +359,7 @@ claim this receipt is complete.
 ```markdown
 ---
 contract: final-print-prep
-contract_version: 3
+contract_version: 4
 job_id: <slug>
 owner: print-engineer
 status: COMPLETE | READY_FOR_REVIEW | BLOCKED_NATIVE_SLICER | REJECTED
@@ -329,7 +393,7 @@ slicer settings and a coupon, but not a native project solely for ceremony.
 ```markdown
 ---
 contract: final-prep-review
-contract_version: 3
+contract_version: 4
 job_id: <slug>
 owner: verifier
 status: FINAL_PRINT_PASS | FINAL_PRINT_REJECT | FINAL_PRINT_BLOCKED

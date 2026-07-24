@@ -27,7 +27,7 @@ Specialists communicate through project files and source photos only, never chat
 
 ## Required reading
 
-1. [`../3d-modeling/references/team-contracts-v3.md`](../3d-modeling/references/team-contracts-v3.md).
+1. [`../3d-modeling/references/team-contracts-v4.md`](../3d-modeling/references/team-contracts-v4.md).
 2. For a solo job only, read and run [`../3d-modeling/SKILL.md`](../3d-modeling/SKILL.md)
    unchanged.
 
@@ -56,8 +56,10 @@ Specialists communicate through project files and source photos only, never chat
 8. Dispatch candidate designer(s) against the sheet, accepted reference, and print plan.
    Require a hash-bound `candidate_readiness.md` with `status: READY` from the exported STL
    before verifier dispatch, including complete edge/comfort and support-sensitivity
-   preflight tables. `NOT_READY` remains inside the same designer commission. Only CadQuery
-   candidates may run in parallel. Serialize all FreeCAD work through one instance.
+   preflight tables. Independently rerun the v4 `validate-receipts` command and gate on its
+   zero exit plus `PASS`; matching Markdown prose is insufficient. `NOT_READY` remains inside
+   the same designer commission. Only CadQuery candidates may run in parallel. Serialize all
+   FreeCAD work through one instance.
 9. Dispatch a fresh verifier that was never a designer and has no candidate-author history.
    Treat designer readiness as untrusted and require all seven checks. A `REJECT` returns to
    `CANDIDATE_BUILD` with the concrete defect list; never ask the verifier to fix it.
@@ -78,6 +80,9 @@ Specialists communicate through project files and source photos only, never chat
 14. Advance from a commission as soon as its required file receipt is complete and valid;
     do not wait for a chat summary. Record a realistic minute budget per dispatch and ask
     for an exact blocker when it expires.
+15. Keep evidence differential. Never copy a canonical STL into a verifier folder. Preserve
+    hashes, reports, metrics, and the decisive defect visual; do not fan out unchanged exports
+    or full render sets per rejection.
 
 If this skill is loaded inside an agent runtime that cannot spawn nested subagents, keep the
 orchestrator in the main session (or launch it as a top-level agent) and dispatch specialists
