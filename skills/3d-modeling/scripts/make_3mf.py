@@ -9,7 +9,10 @@ Usage:
 Parts must already share one coordinate system (exported from the same CAD doc).
 Requires: pip install trimesh numpy
 """
-import sys, io, zipfile, os
+import sys
+import io
+import zipfile
+import os
 import trimesh
 
 

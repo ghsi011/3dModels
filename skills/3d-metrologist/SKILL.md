@@ -36,7 +36,11 @@ render-over-photo overlays.
 ## Checklist
 
 1. Preserve original images and inspect them at useful zoom; annotate which visible edge
-   corresponds to which feature.
+   corresponds to which feature. Note **where the caliper jaws sit**: an overall-envelope
+   dimension must be read at a flat, representative region — a read taken across or beside a
+   raised feature (button, camera bar, corner radius, lip) is biased and is evidence for that
+   local feature, not the envelope. Prefer the flat-region read as nominal and flag near-feature
+   reads; corroborate against an official spec when the product is known.
 2. For a known product, search official specifications and existing 3D models first, then
    reconcile them with the supplied photos and calipers.
 3. Define axis directions, named primary/secondary/tertiary datums, and the zero origin.
@@ -46,6 +50,12 @@ render-over-photo overlays.
    feature.
 5. Record each design-driving dimension with value/range, units, provenance, method, confidence
    (`A measured`, `B official/corroborated`, `C image-derived`, `D assumed`), and datum.
+   For a **fit-driving clearance, specify a bounded fit BAND** — a fit class from
+   `fdm-design.md` §4 (press/snug/sliding/loose/free) with an explicit min **and** max per side
+   — never an open-ended floor. Over-clearance (slop, wobble, a captured part that slips or
+   rattles) is a failure mode exactly like interference; do not write "designer may increase"
+   without an upper bound. A snug non-moving capture around a known feature targets snug–sliding
+   (≈0.1–0.3 mm/side), not "≥0.3 and whatever is convenient."
 6. Never silently average conflicts or convert an assumed visual proportion into a measured
    fact. Put unresolved conflicts in open questions with their downstream effect.
 7. Mark the minimum set of blocking unknowns that prevents reference construction.

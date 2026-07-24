@@ -45,11 +45,19 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
    bed-contact landmark at Z=0, bed normal, insertion/open direction, and forbidden
    downward faces.
 3. State minimum walls, pins, holes, gaps, embossed/debossed features, tolerance/shrink
-   allowances, and load-path rules tied to the planned nozzle/material/profile.
+   allowances, and load-path rules tied to the planned nozzle/material/profile. Carry the
+   metrologist's fit through as a **bounded band (min AND max)**, never a floor; do not widen a
+   functional clearance to simplify the plan.
 4. Set the support budget and forbidden support-contact faces; require bed-facing
    elephant-foot chamfers where fit geometry approaches the plate. Classify each printability
    rule as `SELF_SUPPORT_REQUIRED` or `SUPPORT_ALLOWED`, and freeze its `required_now`,
    `deferred_owner`, and `final_gate` fields before candidate design.
+   **Support-free is the default, not an absolute.** Never require `SELF_SUPPORT_REQUIRED`
+   where meeting it forces a *functional* surface — a mating wall, a fit face, a bearing/grip
+   face — into a distorting gable, steep taper, or over-wide cavity. When self-supporting would
+   compromise function or fit, plan a **bounded `SUPPORT_ALLOWED`** on a *nonfunctional* region
+   instead: function and fit win over support-purity. Reserve zero-support absolutism for parts
+   where a support-free orientation costs nothing functional.
 5. Define multi-colour/body/nozzle constraints and purge/contamination risks.
 6. Define the fit coupon region and pass/fail measurements before the designer begins.
    Default to one multi-lane coupon STL; add files only for physically disjoint interfaces.

@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -42,6 +44,88 @@ def load_single_mesh(path: Path) -> trimesh.Trimesh:
     return loaded
 
 
+def _finite(x: Any) -> bool:
+    """True only for a real, finite (non-NaN/Inf) int or float.
+
+    Rejects bool (a `bool` is an `int` subclass but is never a magnitude),
+    None/null, and any non-numeric type such as a numeric-looking string.
+    Python's ``json`` module parses the non-standard tokens ``NaN``,
+    ``Infinity``, and ``-Infinity`` into real floats by default, so a
+    hand-authored or corrupted contract file can smuggle a non-finite value
+    straight through a naive ``isinstance(x, float)`` check; this helper is
+    the one place that closes that hole.
+    """
+    if isinstance(x, bool):
+        return False
+    if not isinstance(x, (int, float)):
+        return False
+    return math.isfinite(x)
+
+
+def require_finite(value: Any, *, label: str) -> float:
+    """Return `value` as a float, or raise ValueError naming `label`.
+
+    Use for fields that must fail loudly (contract-structure problems), as
+    opposed to fields validated inside `validate_receipts`, which collects
+    field-level messages into its `errors` list instead of raising.
+    """
+    if not _finite(value):
+        raise ValueError(f"{label} must be a finite number, got {value!r}")
+    return float(value)
+
+
+def is_finite_rigid(matrix: Any) -> bool:
+    """True iff `matrix` is a finite rigid-body 4x4 homogeneous transform.
+
+    Requires: convertible to a 4x4 float array; every entry finite (no
+    NaN/Inf/None/non-numeric); last row exactly ``[0, 0, 0, 1]``; the upper
+    3x3 rotation block orthonormal (``R @ R.T == I``); and its determinant
+    ``+1`` (a determinant of ``-1`` is a reflection, and anything else
+    signals scale or shear). Never raises -- unusable input simply yields
+    False so callers can attach their own field-naming error message.
+    """
+    try:
+        arr = np.array(matrix, dtype=float)
+    except (TypeError, ValueError):
+        return False
+    if arr.shape != (4, 4):
+        return False
+    if not np.all(np.isfinite(arr)):
+        return False
+    if not np.allclose(arr[3], (0.0, 0.0, 0.0, 1.0), atol=1e-9):
+        return False
+    rotation = arr[:3, :3]
+    if not np.allclose(rotation @ rotation.T, np.eye(3), atol=1e-6):
+        return False
+    determinant = float(np.linalg.det(rotation))
+    if not math.isclose(determinant, 1.0, abs_tol=1e-6):
+        return False
+    return True
+
+
+def resolve_contained_path(base_dir: Path, relative: Any, *, label: str) -> Path:
+    """Resolve `relative` against `base_dir`, requiring strict containment.
+
+    Rejects a non-string value, an absolute path, a `..` escape, and a
+    symlink/junction escape (``os.path.realpath`` follows links before the
+    containment check runs). Raises ValueError naming `label` on any
+    rejection; returns the resolved, contained, absolute Path otherwise.
+    """
+    if not isinstance(relative, str) or not relative:
+        raise ValueError(f"{label} must be a non-empty relative path string")
+    if os.path.isabs(relative) or Path(relative).is_absolute():
+        raise ValueError(f"{label} must be a relative path, got absolute {relative!r}")
+    base_real = os.path.realpath(str(base_dir))
+    candidate_real = os.path.realpath(os.path.join(str(base_dir), relative))
+    try:
+        common = os.path.commonpath([base_real, candidate_real])
+    except ValueError:
+        raise ValueError(f"{label} escapes its evidence root: {relative!r}")
+    if common != base_real:
+        raise ValueError(f"{label} escapes its evidence root: {relative!r}")
+    return Path(candidate_real)
+
+
 def indexed_rows(
     rows: Any,
     *,
@@ -72,13 +156,26 @@ def support_audit(
         raise ValueError(f"support_rules: missing id {rule_id}")
     rule = rules[rule_id]
 
-    matrix = np.asarray(rule.get("model_to_printer_matrix"), dtype=float)
-    if matrix.shape != (4, 4):
-        raise ValueError(f"{rule_id}: model_to_printer_matrix must be 4x4")
-    bed_z = float(rule.get("bed_z_mm"))
-    bed_tolerance = float(rule.get("bed_tolerance_mm"))
-    downward_normal_z_max = float(rule.get("downward_normal_z_max"))
-    maximum_area = float(rule.get("max_out_of_limit_area_mm2"))
+    matrix_value = rule.get("model_to_printer_matrix")
+    if not is_finite_rigid(matrix_value):
+        raise ValueError(
+            f"{rule_id}: model_to_printer_matrix must be a finite rigid 4x4 transform "
+            "(all entries finite, last row [0, 0, 0, 1], orthonormal rotation, "
+            "determinant +1 -- no scale/shear/reflection)"
+        )
+    matrix = np.array(matrix_value, dtype=float)
+    bed_z = require_finite(rule.get("bed_z_mm"), label=f"{rule_id}: bed_z_mm")
+    bed_tolerance = require_finite(rule.get("bed_tolerance_mm"), label=f"{rule_id}: bed_tolerance_mm")
+    if bed_tolerance < 0:
+        raise ValueError(f"{rule_id}: bed_tolerance_mm must be >= 0, got {bed_tolerance!r}")
+    downward_normal_z_max = require_finite(
+        rule.get("downward_normal_z_max"), label=f"{rule_id}: downward_normal_z_max"
+    )
+    maximum_area = require_finite(
+        rule.get("max_out_of_limit_area_mm2"), label=f"{rule_id}: max_out_of_limit_area_mm2"
+    )
+    if maximum_area < 0:
+        raise ValueError(f"{rule_id}: max_out_of_limit_area_mm2 must be >= 0, got {maximum_area!r}")
 
     mesh = load_single_mesh(stl_path)
     vertices = trimesh.transform_points(mesh.vertices, matrix)
@@ -103,7 +200,11 @@ def support_audit(
         "schema_version": SCHEMA_VERSION,
         "tool": "team_preflight.py",
         "tool_version": TOOL_VERSION,
-        "kind": "support-audit",
+        "kind": "downward-facing-surface-screen",
+        "note": (
+            "Conservative downward-facing-surface orientation screen; does NOT prove "
+            "slicer supportability, bridgeability, or print success."
+        ),
         "stl_path": stl_path.name,
         "stl_sha256": sha256_file(stl_path),
         "plan_checks_sha256": sha256_file(plan_path),
@@ -156,12 +257,23 @@ def validate_receipts(
         expected = plan_edges[edge_id]
         observed = ready_edges[edge_id]
         samples = observed.get("samples_mm")
-        if not isinstance(samples, list) or not all(
-            isinstance(value, (int, float)) for value in samples
-        ):
-            errors.append(f"{edge_id}: samples_mm must be a numeric list")
+        if not isinstance(samples, list) or len(samples) == 0:
+            errors.append(f"{edge_id}: samples_mm must be a non-empty numeric list")
             continue
-        required_samples = int(expected.get("samples_required", 3))
+        if not all(_finite(value) for value in samples):
+            errors.append(
+                f"{edge_id}: samples_mm must contain only finite numbers "
+                "(NaN/Inf/null/bool/non-numeric samples are rejected)"
+            )
+            continue
+        if any(value < 0 for value in samples):
+            errors.append(f"{edge_id}: samples_mm must be non-negative")
+            continue
+        required_samples_raw = expected.get("samples_required", 3)
+        if not _finite(required_samples_raw) or float(required_samples_raw) < 0:
+            errors.append(f"{edge_id}: samples_required must be a finite non-negative number")
+            continue
+        required_samples = int(required_samples_raw)
         if len(samples) < required_samples:
             errors.append(
                 f"{edge_id}: needs {required_samples} samples, found {len(samples)}"
@@ -171,8 +283,20 @@ def validate_receipts(
             if not expected.get("allowed_sharp_reason"):
                 errors.append(f"{edge_id}: allowed sharp edge needs a plan reason")
             continue
+        if not _finite(expected.get("min_radius_mm")):
+            errors.append(f"{edge_id}: min_radius_mm must be a finite number")
+            continue
         minimum = float(expected.get("min_radius_mm"))
+        if minimum < 0:
+            errors.append(f"{edge_id}: min_radius_mm must be >= 0")
+            continue
         maximum_value = expected.get("max_radius_mm")
+        if maximum_value is not None and not _finite(maximum_value):
+            errors.append(f"{edge_id}: max_radius_mm must be a finite number or null")
+            continue
+        if maximum_value is not None and float(maximum_value) < minimum:
+            errors.append(f"{edge_id}: max_radius_mm must be >= min_radius_mm")
+            continue
         observed_min = min(float(value) for value in samples)
         observed_max = max(float(value) for value in samples)
         if observed_min + 1e-9 < minimum:
@@ -204,7 +328,13 @@ def validate_receipts(
         if not isinstance(audit_value, str):
             errors.append(f"{rule_id}: audit_path is required")
             continue
-        audit_path = (readiness_path.parent / audit_value).resolve()
+        try:
+            audit_path = resolve_contained_path(
+                readiness_path.parent, audit_value, label=f"{rule_id}: audit_path"
+            )
+        except ValueError as error:
+            errors.append(str(error))
+            continue
         if not audit_path.is_file():
             errors.append(f"{rule_id}: missing audit file {audit_value}")
             continue
@@ -217,19 +347,43 @@ def validate_receipts(
             errors.append(f"{rule_id}: audit plan hash mismatch")
         if audit.get("rule_id") != rule_id:
             errors.append(f"{rule_id}: audit rule ID mismatch")
-        if audit.get("matrix_sha256") != canonical_sha256(
-            expected.get("model_to_printer_matrix")
-        ):
+        expected_matrix = expected.get("model_to_printer_matrix")
+        if not is_finite_rigid(expected_matrix):
+            errors.append(
+                f"{rule_id}: model_to_printer_matrix must be a finite rigid 4x4 transform "
+                "(all entries finite, last row [0, 0, 0, 1], orthonormal rotation, "
+                "determinant +1 -- no scale/shear/reflection)"
+            )
+            continue
+        if audit.get("matrix_sha256") != canonical_sha256(expected_matrix):
             errors.append(f"{rule_id}: transform hash mismatch")
-        observed_area = float(audit.get("out_of_limit_area_mm2", float("inf")))
-        maximum_area = float(expected.get("max_out_of_limit_area_mm2"))
-        if expected.get("disposition") == "SELF_SUPPORT_REQUIRED":
+        disposition = expected.get("disposition")
+        if disposition == "SELF_SUPPORT_REQUIRED":
+            # max_out_of_limit_area_mm2 is only meaningful (and required) for this
+            # disposition; SUPPORT_ALLOWED rows may legitimately leave it JSON-null
+            # (bounded instead by a named footprint/region). Validating it here,
+            # rather than unconditionally before the disposition branch, is what
+            # stops a null value from crashing this check with `float(None)`.
+            if not _finite(audit.get("out_of_limit_area_mm2")):
+                errors.append(f"{rule_id}: audit out_of_limit_area_mm2 must be a finite number")
+                continue
+            if not _finite(expected.get("max_out_of_limit_area_mm2")):
+                errors.append(
+                    f"{rule_id}: max_out_of_limit_area_mm2 must be a finite number "
+                    "for SELF_SUPPORT_REQUIRED"
+                )
+                continue
+            observed_area = float(audit["out_of_limit_area_mm2"])
+            maximum_area = float(expected["max_out_of_limit_area_mm2"])
+            if maximum_area < 0:
+                errors.append(f"{rule_id}: max_out_of_limit_area_mm2 must be >= 0")
+                continue
             if observed_area > maximum_area + 1e-9:
                 errors.append(
                     f"{rule_id}: {observed_area:.6f} mm2 exceeds "
                     f"{maximum_area:.6f} mm2"
                 )
-        elif expected.get("disposition") == "SUPPORT_ALLOWED":
+        elif disposition == "SUPPORT_ALLOWED":
             if not expected.get("allowed_contact_class"):
                 errors.append(f"{rule_id}: SUPPORT_ALLOWED needs allowed_contact_class")
             if observed.get("forbidden_faces_checked") is not True:
@@ -267,7 +421,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     support = subparsers.add_parser(
         "support-audit",
-        help="Measure transformed non-bed downward area on a re-imported STL.",
+        help=(
+            "Downward-facing-surface orientation screen: measure transformed non-bed "
+            "downward area on a re-imported STL. Subcommand name is kept for backward "
+            "compatibility; the result's `kind` is `downward-facing-surface-screen`. "
+            "This is a conservative geometric screen, not proof of slicer "
+            "supportability, bridgeability, or print success."
+        ),
     )
     support.add_argument("--stl", required=True, type=Path)
     support.add_argument("--plan", required=True, type=Path)

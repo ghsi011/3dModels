@@ -1,5 +1,10 @@
 # Team pipeline runtime contracts v4
 
+**Normative status: this file is the sole normative runtime contract and gate schema for the
+five-role pipeline.** `skills/team-design.md` is architecture rationale, historical templates,
+and migration history; where it conflicts with this file, this file governs. Do not build a
+new runtime contract from a `team-design.md` "Exact template" section — use the schemas below.
+
 This is the compact runtime schema for the five-role pipeline. It preserves the semantic
 fields and gates in `skills/team-design.md` while avoiding rereading the full architecture
 document on every commission.
@@ -101,6 +106,11 @@ Every visible feature must appear in blind-build completeness. A cosmetic featur
 visual/bounded envelope, but cannot be omitted. Camera, control, connector, protective-lip,
 handed, load, and clearance features are functional.
 
+A fit-driving clearance is a **bounded band, not a floor.** State a fit class (`fdm-design.md`
+§4) with an explicit per-side min **and** max; over-clearance (slop, wobble, a captured part
+that slips) fails the fit exactly as interference does. Do not carry a one-sided "≥X, designer
+may increase" into the sheet — that is what produces loose, rattly parts that pass every gate.
+
 ## `print_plan.md`
 
 ```markdown
@@ -162,6 +172,14 @@ out-of-limit result in both readiness and check 7. `SUPPORT_ALLOWED` requires a 
 region, exact transform/nozzle/line-width/layer range, quantified footprint or interval,
 one permitted nonfunctional contact class, enumerated forbidden faces, and named post-print
 artifacts. No unplanned region may become support-allowed after it fails verification.
+
+Support-free is the **default, not a hard constraint.** Do not classify a face
+`SELF_SUPPORT_REQUIRED` when meeting it forces a *functional* surface (a mating wall, fit
+face, bearing/grip surface, or the snug cavity itself) into a distorting gable, steep taper,
+or over-wide cavity — that trades a real functional defect for support-purity. Where a
+support-free orientation would compromise function or fit, the print engineer plans a bounded
+`SUPPORT_ALLOWED` on a *nonfunctional* region instead. Zero-support absolutism is reserved for
+parts where it costs nothing functional.
 
 The print engineer also writes `print_plan_checks.json` with every Edge ID and support rule.
 This file is the machine-readable projection of the accepted Markdown plan, not a second
@@ -262,6 +280,14 @@ python skills/3d-modeling/scripts/team_preflight.py validate-receipts \
   --readiness candidate_preflight.json \
   --output candidate_preflight_validation.json
 ```
+
+`support-audit` (subcommand name kept for backward compatibility; its result `kind` is
+`downward-facing-surface-screen`) is a **conservative downward-facing-surface orientation
+screen** — it measures transformed non-bed-contact area whose normal faces down past a
+threshold. It does **not** prove slicer supportability, bridgeability, or print success; a
+face it flags as within limits can still fail to print cleanly, and slicer behavior (support
+generation, bridging, interface layers) is not modeled. Treat a PASS as necessary geometric
+evidence for the agent's supportability judgment, never as that judgment itself.
 
 `candidate_preflight.json` binds the STL and plan-check hashes, contains exactly every plan
 Edge ID with numeric `samples_mm`, method, and evidence, and exactly every support-rule ID

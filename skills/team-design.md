@@ -1,5 +1,13 @@
 # Multi-agent split design for `3d-modeling`
 
+> **Normative-status notice.** This file is architecture rationale, historical role/contract
+> templates, and migration history for the five-role pipeline — it is **not** the runtime
+> contract/gate schema. The sole normative runtime contract and gate schema is
+> [`skills/3d-modeling/references/team-contracts-v4.md`](3d-modeling/references/team-contracts-v4.md);
+> where this file conflicts with it, v4 governs. Sections below labeled "Exact template" are
+> historical examples of an earlier contract revision, kept for design context — do not use
+> them to author or validate a runtime contract; use the v4 schemas instead.
+
 Status: approved and implemented. The existing `skills/3d-modeling/` skill remains the
 unchanged solo workflow; the five slices and their runtime definitions implement team mode.
 
