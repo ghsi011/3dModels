@@ -1,0 +1,77 @@
+{
+  "schema_version": 4,
+  "job_id": "pixel7-case-metrology",
+  "print_plan_revision": 1,
+  "dimensions_revision": 1,
+  "reference_sha256": "5d683184b814d7089b4075354b81aa45aa8aaae35aa0bb45c12324aaea692b7f",
+  "candidate_predicate_revision": 1,
+  "model_to_printer_matrix_note": "180 deg rotation about model +X axis, R = diag(1,-1,-1): (x,y,z) -> (x,-y,-z). Proper rotation, det=+1, no mirroring. Translation is Z-only, landmark-defined (bed-contact landmark plane -> printer Z=0); not a fixed numeric offset because final wall thickness is a CANDIDATE_BUILD decision, not a pre-design one.",
+  "edges": [
+    {
+      "id": "E-01",
+      "plan_rule_id": "G-03",
+      "feature": "cavity corner radius (F-002 / M-004), all 4 vertical corners",
+      "min_radius_mm": 9.5,
+      "max_radius_mm": 11.0,
+      "samples_required": 3
+    },
+    {
+      "id": "E-02",
+      "plan_rule_id": "G-04",
+      "feature": "elephant-foot chamfer around the open-rim bed-contact loop",
+      "min_radius_mm": 0.2,
+      "max_radius_mm": 0.4,
+      "samples_required": 4
+    }
+  ],
+  "support_rules": [
+    {
+      "id": "S-01",
+      "plan_rule_id": "G-07",
+      "region": "camera-bar relief raised protective boss (F-003 relief), exterior back face",
+      "disposition": "SELF_SUPPORT_REQUIRED",
+      "model_to_printer_matrix": [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]],
+      "bed_z_mm": 0,
+      "bed_tolerance_mm": 0.1,
+      "downward_normal_z_max": -0.70710678,
+      "max_out_of_limit_area_mm2": 0
+    },
+    {
+      "id": "S-02",
+      "plan_rule_id": "G-08 / G-09 / G-10",
+      "region": "clearance-window roof bridges spanning <=25 mm (button, port, grille, mic reliefs) — 'fine' bridge class per fdm-design.md sec1, no support",
+      "disposition": "SELF_SUPPORT_REQUIRED",
+      "model_to_printer_matrix": [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]],
+      "bed_z_mm": 0,
+      "bed_tolerance_mm": 0.1,
+      "downward_normal_z_max": -0.70710678,
+      "max_out_of_limit_area_mm2": 40,
+      "area_cap_note": "per single window instance (span_mm x wall_thickness_mm, e.g. 25 x 1.6); not a summed budget across features"
+    },
+    {
+      "id": "S-03",
+      "plan_rule_id": "G-08",
+      "region": "volume-rocker/power-button window roof strip only, limited to the span exceeding 25 mm if the sheet's elongated-window strategy (M-021, approx 38 mm) is built unribbed",
+      "disposition": "SUPPORT_ALLOWED",
+      "model_to_printer_matrix": [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]],
+      "bed_z_mm": 0,
+      "bed_tolerance_mm": 0.1,
+      "downward_normal_z_max": -0.70710678,
+      "max_out_of_limit_area_mm2": null,
+      "footprint_note": "bounded to the window opening's own roof strip only (nonfunctional pass-through clearance region, up to approx 38mm span x wall thickness); never the exterior cosmetic face and never the button-rocker contact pad",
+      "requires_candidate_dispatch": false,
+      "activates_only_if": "candidate chooses an unribbed window span > 25 mm; otherwise this rule is unused and S-02 governs"
+    },
+    {
+      "id": "S-04",
+      "plan_rule_id": "G-11",
+      "region": "all other candidate faces outside S-01/S-02/S-03 and the E-02 rim-chamfer landmark",
+      "disposition": "SELF_SUPPORT_REQUIRED",
+      "model_to_printer_matrix": [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]],
+      "bed_z_mm": 0,
+      "bed_tolerance_mm": 0.1,
+      "downward_normal_z_max": -0.70710678,
+      "max_out_of_limit_area_mm2": 0
+    }
+  ]
+}

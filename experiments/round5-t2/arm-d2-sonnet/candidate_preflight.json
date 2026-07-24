@@ -1,0 +1,45 @@
+{
+  "schema_version": 4,
+  "job_id": "round4-t2-team-v4",
+  "candidate_id": "arm-d2-sonnet",
+  "candidate_stl_sha256": "099b5fb21441ca56916da9a3ba9c9e44e8b7e5e6f001e47be3c3c0afb0f6de45",
+  "print_plan_checks_sha256": "6f146669b2c819d9b013c31d2e54b4c7a27eec8cec645e9614fcb5fcbdff0016",
+  "edges": [
+    {
+      "id": "E-01",
+      "samples_mm": [0.5735, 2.00, 2.00],
+      "method": "Re-imported-STL circle-fit: KD-tree spherical neighborhood around the known corner (X=+/-BODY_X_HALF, Z=Z_FLOOR, grip Y-run), projected to the X-Z plane, algebraic least-squares circle fit.",
+      "evidence": "measure_edges.py + measure_edges1.run.json; edge_measurements.json. HONEST CAVEAT: only 1 of 3 probe windows isolated a clean, uncontaminated sample (0.5735mm at Y=-15.00, itself likely partially contaminated by the nearby MOUTH_R=0.80 fillet given the compact cross-section and sparse STL tessellation along the swept run); the other two entries are the DESIGN value (2.00mm, from the build123d fillet(radius=2.00) call confirmed is_valid=True with no OCC fillet error) substituted because the measurement tooling could not isolate an independent clean sample within the time budget -- this is NOT an independently confirmed re-measurement for those two entries and is flagged as a known gap in print_notes.md / candidate_readiness.md."
+    },
+    {
+      "id": "E-02",
+      "samples_mm": [2.00, 2.00, 2.00],
+      "method": "Same method as E-01, probed at the Y_ROOT functional-label seam.",
+      "evidence": "measure_edges.py + measure_edges1.run.json. HONEST CAVEAT: NO probe window returned a clean, uncontaminated sample within the time budget (all attempts either found 0 points or picked up the adjacent MOUTH_R=0.80 fillet instead of the true OUTER_FILLET=2.00 corner, the two features being only ~2.5mm apart in X at this Y). All 3 entries are the DESIGN value substituted for the same reason as E-01's unconfirmed entries -- this is a genuine measurement-tooling gap, not an independent re-measurement, and is a contributing NOT_READY factor."
+    },
+    {
+      "id": "E-03",
+      "samples_mm": [0.8000, 0.8000, 0.8000],
+      "method": "Re-imported-STL circle-fit: KD-tree spherical neighborhood at the near (Y_ROOT) mouth-rim edge, both X-ends and midspan, projected to the Y-Z plane, algebraic circle fit.",
+      "evidence": "measure_edges.py + measure_edges1.run.json; edge_measurements.json. Both X-end samples (X=-30.5, X=+30.5) independently confirmed 0.8000mm to 6 significant figures, matching the design MOUTH_R=0.80mm exactly. The midspan (X=0) probe window did not isolate a clean sample within the time budget; its value is the design/confirmed-endpoint value substituted for a single constant-radius swept fillet (both ends matched to 6 sig figs, so the midpoint is extremely likely identical), flagged as a partial-confirmation gap."
+    },
+    {
+      "id": "E-04",
+      "samples_mm": [0.8000, 0.8000, 0.5086],
+      "method": "Same method as E-03, probed along the +X-side mouth-rim edge (Y_ROOT..Y_TAPER_START run).",
+      "evidence": "measure_edges.py + measure_edges1.run.json. Near-end sample (Y=-5.55) confirmed 0.8000mm cleanly. Midspan probe returned no clean isolate (substituted with the confirmed 0.8000mm design value). The far-end sample (Y=8.55, close to Y_TAPER_START=9.15) measured 0.5086mm -- BELOW the 0.80mm minimum -- most likely genuine contamination from the immediately adjacent (deliberately unfilleted) far mouth-rim edge and the tent-wedge cut, not a true design-radius defect, but reported as measured and NOT overridden: this is an honest FAIL-relevant data point contributing to NOT_READY."
+    },
+    {
+      "id": "E-05",
+      "samples_mm": [0.0, 0.0, 0.0],
+      "method": "Vertex presence check at Y=P_BED_Y=-16.000 (mesh vertices exist exactly at the bed plane, confirming a genuine flat/sharp bed-contact boundary as designed) plus the >=0.50mm functional-separation check (Y_ROOT - PBED_Y = 9.85mm, far exceeding the 0.50mm minimum).",
+      "evidence": "measure_edges.py + measure_edges1.run.json; edge_measurements.json (e05_functional_offset_mm=9.85). Plan allows this edge class to remain sharp (allowed_sharp=true, min_radius_mm=0.0), so 0.0 is a compliant, not a failing, value."
+    }
+  ],
+  "support_rules": [
+    {"id": "S-01", "audit_path": "S-01-support-audit.json"},
+    {"id": "S-02", "audit_path": "S-02-support-audit.json"},
+    {"id": "S-03", "audit_path": "S-03-support-audit.json"},
+    {"id": "S-04", "audit_path": "S-04-support-audit.json"}
+  ]
+}

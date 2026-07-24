@@ -1,0 +1,14 @@
+{
+  "label": "coupon_build1",
+  "script": "candidate_coupon.py",
+  "script_sha256": "77c7246965fa422a6d65cce0f847721afea905a59da4eacd19b7562178f8883b",
+  "interp": "C:/Users/ghsi0/b123dv/Scripts/python.exe",
+  "args": [],
+  "exit_code": 0,
+  "elapsed_s": 4.93,
+  "peak_rss_mb": 420.7,
+  "timeout_s": 120.0,
+  "mem_cap_mb": 4000.0,
+  "outcome": "ok",
+  "psutil": true
+}

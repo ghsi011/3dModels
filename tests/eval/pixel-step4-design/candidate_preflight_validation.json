@@ -1,0 +1,28 @@
+{
+  "candidate_stl_sha256": "dc8e7f97c96a20d45e8c93734188a02b131f6a443c0f116f1c4d460ce7c4d39f",
+  "edge_ids": [
+    "E-01",
+    "E-02"
+  ],
+  "errors": [
+    "S-01: audit STL hash mismatch",
+    "S-01: 399.782729 mm2 exceeds 0.000000 mm2",
+    "S-02: audit STL hash mismatch",
+    "S-02: 399.782729 mm2 exceeds 40.000000 mm2",
+    "S-03: audit_path is required",
+    "S-04: audit STL hash mismatch",
+    "S-04: 399.782729 mm2 exceeds 0.000000 mm2"
+  ],
+  "kind": "receipt-validation",
+  "print_plan_checks_sha256": "302d80a48023d78b83c419c9b6c89148bee2a6a0d84ad8dd3445a61ed92f4239",
+  "result": "FAIL",
+  "schema_version": 4,
+  "support_rule_ids": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04"
+  ],
+  "tool": "team_preflight.py",
+  "tool_version": "1.0"
+}

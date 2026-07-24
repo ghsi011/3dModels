@@ -1,0 +1,46 @@
+{
+  "schema_version": 4,
+  "job_id": "pixel7-case-metrology",
+  "candidate_id": "pixel-step4-design",
+  "candidate_stl_sha256": "dc8e7f97c96a20d45e8c93734188a02b131f6a443c0f116f1c4d460ce7c4d39f",
+  "print_plan_checks_sha256": "302d80a48023d78b83c419c9b6c89148bee2a6a0d84ad8dd3445a61ed92f4239",
+  "note_stl_frame": "candidate_stl_sha256 is case.stl, the native design frame (matches phone_reference.stl's frame, tolerance=0.01/angularTolerance=0.1). The plan's support_rules model_to_printer_matrix is rotation-only (R=diag(1,-1,-1), zero translation) - applying it directly to case.stl misclassifies the whole open rim as non-bed-contact (rim lands at printer Z=-9.9, not 0), which was verified empirically (see candidate_readiness.md 'Support-audit STL frame' note) before any real support numbers could be trusted. The 3 support audits below were therefore run against case_printer_frame.stl, a deterministic Z-only translation of case.stl by (0,0,-9.9mm) - i.e. case.stl shifted so its open rim (max native Z) lands at native Z=0, exactly the landmark print_plan.md's own transform note describes as 'translation is Z-only... not a fixed numeric offset because final wall thickness is a CANDIDATE_BUILD decision'. case_printer_frame.stl sha256: 7824df9e50d8d7b3c43f72d0f29ef60f6c667e18e4e104108f81ac776b5b0178. This mismatches candidate_stl_sha256 by design (different frame, same geometry) - validate-receipts' audit-hash check will flag it; see candidate_readiness.md for the full explanation rather than a silent workaround.",
+  "edges": [
+    {
+      "id": "E-01",
+      "samples_mm": [9.7, 9.7, 9.7, 9.7, 9.6996, 9.7, 9.7, 9.7, 9.7, 9.7, 9.6996, 9.7],
+      "method": "trimesh Z=1.0mm section of case.stl (re-imported STL, native frame); for each of the 4 cavity corners, distance from the corner's known fillet-arc center (W/2+FIT_SNUG-CAVITY_R, L/2+FIT_SNUG-CAVITY_R per sign) to 3 boundary points spaced across the 90deg arc (start/mid/end, sorted by angle).",
+      "evidence": "case_model.py PARAMETERS section (CAVITY_R=9.70mm = R_CORNER 9.5 + FIT_SNUG 0.20); measurement script output reproduced in print_notes.md 'Corner radius measurement'. All 12 samples read 9.6996-9.7000mm, inside the E-01 band [9.5,11.0]."
+    },
+    {
+      "id": "E-02",
+      "samples_mm": [0.3, 0.3, 0.3, 0.3],
+      "method": "trimesh sections of case.stl at Y=0 (X-Z profile, +X/-X sides) and X=0 / X=15 (Y-Z profile, +Y/-Y sides, X=15 chosen to dodge the USB-C window at X=0). At each side, horizontal run between the rim top face (Z=Z_TOP=9.9mm) and the point 0.3mm below it (Z=9.6mm) on both the outer (exterior) and inner (cavity-mouth) rim edges.",
+      "evidence": "case_model.py RIM_CHAMFER=0.30mm (CadQuery .chamfer(0.3) on the top-face edge loop). All 4 sides measured exactly 0.2999-0.3000mm run at 0.3mm rise (45deg), inside the E-02 band [0.2,0.4]."
+    }
+  ],
+  "support_rules": [
+    {
+      "id": "S-01",
+      "audit_path": "S-01-support-audit.json",
+      "note": "Region label is 'camera boss'; the shared tool computes a whole-mesh total (not region-restricted, see the plan_checks matrix reuse across S-01/S-02/S-04). Boss-specific isolation performed manually and reported in candidate_readiness.md; raw tool result is FAIL (399.78mm2 > 0mm2) - see candidate_readiness.md breakdown."
+    },
+    {
+      "id": "S-02",
+      "audit_path": "S-02-support-audit.json",
+      "note": "Same whole-mesh total as S-01/S-04 (399.78mm2); the plan's own footprint_note caps this per-instance (<=40mm2 per window), not as one summed budget - every individual window-roof contribution identified in candidate_readiness.md is well under 40mm2. Raw tool result on the summed total is FAIL (399.78 > 40) because the tool has no per-instance attribution; see candidate_readiness.md for the per-instance breakdown."
+    },
+    {
+      "id": "S-03",
+      "audit_path": null,
+      "activated": false,
+      "reason_not_activated": "Design choice: the button window (M-021's ~38mm elongated-relief strategy) is split by one 1.8mm self-supporting rib into two ~18.1mm segments, both <=25mm, so this design never triggers S-03's 'activates_only_if: unribbed span > 25mm' condition - S-02 governs both segments instead, per the plan's own stated alternative in G-08.",
+      "tool_limitation": "team_preflight.py support-audit crashes (exit 2, 'float() argument must be a string or a real number, not NoneType') on S-03 regardless of design choice, because S-03's max_out_of_limit_area_mm2 is JSON null in print_plan_checks.json and the script does float(rule.get(...)) unconditionally with no None-handling. Reproduced verbatim: `python skills/3d-modeling/scripts/team_preflight.py support-audit --stl case_printer_frame.stl --plan ../step3-plan-pixel7/print_plan_checks.json --rule-id S-03 --output S-03-support-audit.json` -> stderr 'team_preflight: float() argument must be a string or a real number, not NoneType', exit 2. No valid audit JSON can be produced for S-03 through the shared tool for ANY candidate STL, activated or not. Flagged for print-plan / tool revision, not worked around here."
+    },
+    {
+      "id": "S-04",
+      "audit_path": "S-04-support-audit.json",
+      "note": "Same whole-mesh total as S-01/S-02 (399.78mm2). Raw tool result FAIL (399.78 > 0). Breakdown in candidate_readiness.md: ~181mm2 is the G-04 rim chamfer's own intentional 45deg faces sitting exactly on the classification threshold (not a support region at all); ~99mm2 is small window-roof transitions already covered by S-02's per-instance allowance; ~111mm2 remains unattributed near the camera-pocket/back-window seam and is reported as an open item, not hidden."
+    }
+  ]
+}

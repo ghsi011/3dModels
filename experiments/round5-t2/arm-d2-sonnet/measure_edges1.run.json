@@ -1,0 +1,14 @@
+{
+  "label": "measure_edges1",
+  "script": "measure_edges.py",
+  "script_sha256": "7b272c5e68eeceb833c32d3db064d1c8daafe02d0a8fd14bbcd2ba6411f54b16",
+  "interp": "python",
+  "args": [],
+  "exit_code": 0,
+  "elapsed_s": 2.349,
+  "peak_rss_mb": 101.0,
+  "timeout_s": 120.0,
+  "mem_cap_mb": 4000.0,
+  "outcome": "ok",
+  "psutil": true
+}

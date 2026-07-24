@@ -1,0 +1,20 @@
+{
+  "bed_contact_area_mm2": 1937.654772719317,
+  "bed_tolerance_mm": 0.05,
+  "bed_z_mm": 0.0,
+  "disposition": "SELF_SUPPORT_REQUIRED",
+  "downward_normal_z_max": -0.70710679,
+  "kind": "support-audit",
+  "matrix_sha256": "60997329491c4521eeed30062306d6b935bb1f858c3f2f14ef1b6ec0b8ca3213",
+  "max_out_of_limit_area_mm2": 0.0,
+  "out_of_limit_area_mm2": 0.2750941101370472,
+  "out_of_limit_faces": 64,
+  "plan_checks_sha256": "6f146669b2c819d9b013c31d2e54b4c7a27eec8cec645e9614fcb5fcbdff0016",
+  "result": "FAIL",
+  "rule_id": "S-02",
+  "schema_version": 4,
+  "stl_path": "candidate_tool.stl",
+  "stl_sha256": "099b5fb21441ca56916da9a3ba9c9e44e8b7e5e6f001e47be3c3c0afb0f6de45",
+  "tool": "team_preflight.py",
+  "tool_version": "1.0"
+}

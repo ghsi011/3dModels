@@ -1,0 +1,26 @@
+{
+  "candidate_stl_sha256": "7824df9e50d8d7b3c43f72d0f29ef60f6c667e18e4e104108f81ac776b5b0178",
+  "edge_ids": [
+    "E-01",
+    "E-02"
+  ],
+  "errors": [
+    "candidate_stl_sha256 does not match the exported STL",
+    "S-01: 399.782729 mm2 exceeds 0.000000 mm2",
+    "S-02: 399.782729 mm2 exceeds 40.000000 mm2",
+    "S-03: audit_path is required",
+    "S-04: 399.782729 mm2 exceeds 0.000000 mm2"
+  ],
+  "kind": "receipt-validation",
+  "print_plan_checks_sha256": "302d80a48023d78b83c419c9b6c89148bee2a6a0d84ad8dd3445a61ed92f4239",
+  "result": "FAIL",
+  "schema_version": 4,
+  "support_rule_ids": [
+    "S-01",
+    "S-02",
+    "S-03",
+    "S-04"
+  ],
+  "tool": "team_preflight.py",
+  "tool_version": "1.0"
+}

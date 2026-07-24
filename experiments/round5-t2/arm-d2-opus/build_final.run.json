@@ -1,0 +1,14 @@
+{
+  "label": "build_final",
+  "script": "candidate_model.py",
+  "script_sha256": "d9abf3bf9ab76db36a6533ef2335c17491ca5b57974d2d5a3e84e069d82b745a",
+  "interp": "C:/Users/ghsi0/b123dv/Scripts/python.exe",
+  "args": [],
+  "exit_code": 0,
+  "elapsed_s": 4.941,
+  "peak_rss_mb": 428.4,
+  "timeout_s": 120.0,
+  "mem_cap_mb": 4000.0,
+  "outcome": "ok",
+  "psutil": true
+}

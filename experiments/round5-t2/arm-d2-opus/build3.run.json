@@ -1,0 +1,14 @@
+{
+  "label": "build3",
+  "script": "candidate_model.py",
+  "script_sha256": "261a397aa826c816be14aa019d1033844a801be70b512fdea6d91f934361381a",
+  "interp": "C:/Users/ghsi0/b123dv/Scripts/python.exe",
+  "args": [],
+  "exit_code": 0,
+  "elapsed_s": 5.412,
+  "peak_rss_mb": 430.6,
+  "timeout_s": 120.0,
+  "mem_cap_mb": 4000.0,
+  "outcome": "ok",
+  "psutil": true
+}
