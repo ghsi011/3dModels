@@ -7,9 +7,10 @@ description: "Own manufacturing constraints and physical validation for 3D jobs.
 
 ## Charter
 
-Own the printer, material, orientation, slicing process, coupons, and failed-print forensics.
-Engage before design so DFM is a design input, and after verification so accepted geometry
-has an executable physical test plan. Do not redesign geometry or waive verification.
+Own the printer, material, orientation, **fit strategy**, slicing process, coupons, and
+failed-print forensics. Engage before design so DFM is a design input, and after verification
+so accepted geometry has an executable physical test plan. Do not redesign geometry or waive
+verification.
 
 ## Inputs and outputs
 
@@ -45,10 +46,21 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
    bed-contact landmark at Z=0, bed normal, insertion/open direction, and forbidden
    downward faces.
 3. State minimum walls, pins, holes, gaps, embossed/debossed features, tolerance/shrink
-   allowances, and load-path rules tied to the planned nozzle/material/profile. Carry the
-   metrologist's fit through as a **bounded band (min AND max)**, never a floor; do not widen a
-   functional clearance to simplify the plan.
-4. Set the support budget and forbidden support-contact faces; require bed-facing
+   allowances, and load-path rules tied to the planned nozzle/material/profile.
+4. **Own the fit strategy, declared per interface.** Derive it from the metrologist's
+   as-observed mating geometry and stated measurement uncertainty in `dimensions.md` — the
+   metrologist records geometry, not clearance. For every mating/contact interface, declare in
+   `print_plan.md`: interface ID; fit type (`clearance`, `transition`, `interference`,
+   intended elastic contact, crush rib, snap engagement, retention, seal, thread, or compliant
+   mechanism); intended contact state; an allowed interference/clearance range with an explicit
+   min **and** max per side (never an open-ended floor); motion path (state `none` for a fixed
+   interface); material assumptions; a coupon/calibration requirement; and a numeric/physical
+   acceptance method. **No universal zero-interference rule** — an interference, crush-rib,
+   snap, or retention interface may declare a deliberately negative (intersecting) range; a
+   `clearance` interface must stay non-negative on both sides. Over-clearance (slop, wobble, a
+   captured part that slips or rattles) is a failure mode exactly like interference; every
+   range needs its upper bound too.
+5. Set the support budget and forbidden support-contact faces; require bed-facing
    elephant-foot chamfers where fit geometry approaches the plate. Classify each printability
    rule as `SELF_SUPPORT_REQUIRED` or `SUPPORT_ALLOWED`, and freeze its `required_now`,
    `deferred_owner`, and `final_gate` fields before candidate design.
@@ -58,14 +70,15 @@ has an executable physical test plan. Do not redesign geometry or waive verifica
    compromise function or fit, plan a **bounded `SUPPORT_ALLOWED`** on a *nonfunctional* region
    instead: function and fit win over support-purity. Reserve zero-support absolutism for parts
    where a support-free orientation costs nothing functional.
-5. Define multi-colour/body/nozzle constraints and purge/contamination risks.
-6. Define the fit coupon region and pass/fail measurements before the designer begins.
-   Default to one multi-lane coupon STL; add files only for physically disjoint interfaces.
-7. Record assumptions and approval state in `print_plan.md`; unresolved manufacturing
+6. Define multi-colour/body/nozzle constraints and purge/contamination risks.
+7. Define the fit coupon region and pass/fail measurements for every interface that declared a
+   coupon/calibration requirement, before the designer begins. Default to one multi-lane
+   coupon STL; add files only for physically disjoint interfaces.
+8. Record assumptions and approval state in `print_plan.md`; unresolved manufacturing
    blockers stop candidate design.
-8. Write `print_plan_checks.json` as the exact machine-readable projection of every plan
-   Edge ID and support rule. The Markdown and JSON ID sets, transforms, thresholds, and
-   dispositions must agree before candidate dispatch.
+9. Write `print_plan_checks.json` as the exact machine-readable projection of every plan
+   Edge ID, support rule, and declared interface. The Markdown and JSON ID sets, transforms,
+   thresholds, and dispositions must agree before candidate dispatch.
 
 ### Post-verification
 

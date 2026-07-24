@@ -55,7 +55,10 @@ overlays, and issue a concrete file-contract verdict.
    bounding-box or scalar checks; note occluded or misleading views.
 7. Audit against `print_plan.md`: planned orientation, overhangs/support budget,
    wall/feature sizes versus the planned nozzle, bed chamfers, material/load direction, and
-   colour/process constraints. Independently repeat declared edge sections in check 6. In
+   colour/process constraints. For every declared interface, check the built geometry against
+   its declared fit type, contact state, and range, using its declared acceptance method — the
+   verifier checks the designer's *implementation* of the print engineer's fit strategy, it
+   does not redeclare the strategy. Independently repeat declared edge sections in check 6. In
    check 7, recompute every `SELF_SUPPORT_REQUIRED` predicate and each
    `SUPPORT_ALLOWED` footprint/classification. Rerun shared `team_preflight.py
    support-audit` into verifier-owned JSON for every support rule; never trust the designer's

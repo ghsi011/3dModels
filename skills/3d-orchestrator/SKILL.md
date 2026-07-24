@@ -51,8 +51,9 @@ Specialists communicate through project files and source photos only, never chat
    again to overlay-accept it. A failure returns to `METROLOGY`: fix the sheet, not the
    reference model.
 7. Dispatch the print engineer for the pre-design `print_plan.md`; gate on orientation,
-   material, nozzle-linked limits, support budget, chamfers, colour constraints, and a
-   frozen `required_now` / `deferred_owner` / `final_gate` scope for every geometry rule.
+   material, nozzle-linked limits, support budget, chamfers, colour constraints, a complete
+   per-interface fit-strategy declaration, and a frozen `required_now` / `deferred_owner` /
+   `final_gate` scope for every geometry rule.
 8. Dispatch candidate designer(s) against the sheet, accepted reference, and print plan.
    Require a hash-bound `candidate_readiness.md` with `status: READY` from the exported STL
    before verifier dispatch, including complete edge/comfort and support-sensitivity

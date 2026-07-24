@@ -50,7 +50,10 @@ Read exactly one backend pattern file plus mandatory FDM guidance:
    features so ambiguity becomes visible during the metrologist round trip.
 4. Candidate commission: make orientation, layer-vs-load direction, nozzle/wall limits,
    overhangs, support access, shrink/clearance, elephant-foot chamfers, and multi-colour
-   constraints geometric inputs from `print_plan.md`.
+   constraints geometric inputs from `print_plan.md`. Implement the plan's declared
+   per-interface fit strategy geometrically: derive candidate mating geometry from the print
+   plan's interface declarations and the metrologist's as-observed geometry in
+   `dimensions.md`. The designer implements the declared fit intent; it does not choose it.
 5. Organize boolean operations robustly; preserve editable source; label bodies and exports.
 6. Generate deterministic exports from the source and render useful exterior, mating,
    section, and print-orientation views.

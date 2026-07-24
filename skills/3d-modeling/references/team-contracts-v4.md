@@ -106,10 +106,12 @@ Every visible feature must appear in blind-build completeness. A cosmetic featur
 visual/bounded envelope, but cannot be omitted. Camera, control, connector, protective-lip,
 handed, load, and clearance features are functional.
 
-A fit-driving clearance is a **bounded band, not a floor.** State a fit class (`fdm-design.md`
-§4) with an explicit per-side min **and** max; over-clearance (slop, wobble, a captured part
-that slips) fails the fit exactly as interference does. Do not carry a one-sided "≥X, designer
-may increase" into the sheet — that is what produces loose, rattly parts that pass every gate.
+A mating/fit-relevant dimension records **as-observed geometry and its measurement
+uncertainty** (instrument resolution, repeat-read spread, near-feature bias) — not a fit class,
+clearance band, or interference allowance. Fit strategy (clearance, transition, interference,
+intended contact, and their bounds) is owned by `print_plan.md`, not this sheet; see that
+section for the per-interface declaration and the "bounded band, not a floor" principle it
+inherits.
 
 ## `print_plan.md`
 
@@ -144,6 +146,10 @@ updated_utc: <iso-8601>
 ## Geometry rules and phase scope
 | ID | Rule | Numeric limit | Verification predicate | required_now | deferred_owner | final_gate |
 |---|---|---:|---|---|---|---|
+
+## Interfaces
+| ID | Fit type | Contact state | Range min/max per side | Motion path | Material | Coupon/calibration | Acceptance method |
+|---|---|---|---:|---|---|---|---|
 
 ## Coupon
 | Interfaces represented | Clearance lanes | Material | Pass/fail measurements |
@@ -181,9 +187,22 @@ support-free orientation would compromise function or fit, the print engineer pl
 `SUPPORT_ALLOWED` on a *nonfunctional* region instead. Zero-support absolutism is reserved for
 parts where it costs nothing functional.
 
-The print engineer also writes `print_plan_checks.json` with every Edge ID and support rule.
-This file is the machine-readable projection of the accepted Markdown plan, not a second
-source of requirements:
+The print engineer owns fit strategy and declares it per interface. Every mating/contact
+interface gets an ID and a full declaration: fit type (`clearance`, `transition`,
+`interference`, intended elastic contact, crush rib, snap engagement, retention, seal, thread,
+or compliant mechanism), intended contact state, an explicit per-side min **and** max range,
+motion path (`none` for a fixed interface), material assumptions, a coupon/calibration
+requirement, and a numeric/physical acceptance method. **No universal zero-interference rule**:
+an interference, crush-rib, snap, or retention interface may declare a deliberately negative
+(intersecting) range; a `clearance` interface must stay non-negative on both sides. A
+fit-driving range is a **bounded band, not a floor** — over-clearance (slop, wobble, a captured
+part that slips or rattles) fails the fit exactly as interference does. Do not carry a
+one-sided "≥X, designer may increase" into the plan — that is what produces loose, rattly parts
+that pass every gate.
+
+The print engineer also writes `print_plan_checks.json` with every Edge ID, support rule, and
+declared interface. This file is the machine-readable projection of the accepted Markdown plan,
+not a second source of requirements:
 
 ```json
 {
@@ -207,13 +226,37 @@ source of requirements:
       "downward_normal_z_max": -0.70710678,
       "max_out_of_limit_area_mm2": 0
     }
+  ],
+  "interfaces": [
+    {
+      "id": "I-01",
+      "fit_type": "clearance",
+      "contact_state": "sliding, user-operated",
+      "min_mm": 0.15,
+      "max_mm": 0.30,
+      "motion_path": "insert along -Z, 12 mm travel",
+      "material": "PETG on PETG",
+      "coupon_required": true,
+      "acceptance_method": "gauge-pin pass/fail per lane"
+    }
   ]
 }
 ```
 
 Use `allowed_sharp: true` only with `allowed_sharp_reason`. A `SUPPORT_ALLOWED` row also
 names `allowed_contact_class` and forbidden faces in the Markdown plan. The print engineer
-must make the Edge ID and support-rule ID sets complete before candidate CAD.
+must make the Edge ID, support-rule ID, and interface ID sets complete before candidate CAD.
+
+`interfaces` is optional for backward compatibility — a plan with no mating/contact interfaces
+may omit it, and `team_preflight.py validate-interfaces` skips validation when the key is
+absent. When present, every entry is fully validated: `id` (unique string), `fit_type` (one of
+`clearance`, `transition`, `interference`, `elastic_contact`, `crush_rib`, `snap`, `retention`,
+`seal`, `thread`, `compliant`), `contact_state` (string), finite `min_mm`/`max_mm` with
+`max_mm >= min_mm` (a `clearance` interface additionally requires both `>= 0`; every other fit
+type may declare a negative, intersecting range), `motion_path` (string), `material` (string),
+`acceptance_method` (string), and `coupon_required` (bool). A malformed entry fails validation
+with a field/ID-named error; see
+[`../scripts/team_preflight.py`](../scripts/team_preflight.py).
 
 ## `candidate_readiness.md`
 

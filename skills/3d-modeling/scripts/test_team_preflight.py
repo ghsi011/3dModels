@@ -884,5 +884,202 @@ class TeamPreflightAdversarialTest(unittest.TestCase):
             self.assertIn("duplicate id S-01", str(ctx.exception))
 
 
+class InterfacesValidationTest(unittest.TestCase):
+    """H-03: fit strategy moved from the metrologist to the print engineer and is now
+    machine-enforced via the optional `print_plan_checks.json` `"interfaces"` array. These
+    tests cover backward-compat (absent key), the happy path for a structurally-different
+    clearance fit and an interference fit, and one adversarial case per required field.
+    """
+
+    def clearance_interface(self, **overrides: object) -> dict:
+        # A rigid sliding/seated clearance fit -- e.g. a Pixel-case wall or a seated dock.
+        interface = {
+            "id": "I-CLR-01",
+            "fit_type": "clearance",
+            "contact_state": "sliding, user-operated insertion",
+            "min_mm": 0.15,
+            "max_mm": 0.30,
+            "motion_path": "insert along -Z, 12 mm travel to seated stop",
+            "material": "PETG on PETG",
+            "coupon_required": True,
+            "acceptance_method": "gauge-pin pass/fail per lane",
+        }
+        interface.update(overrides)
+        return interface
+
+    def interference_interface(self, **overrides: object) -> dict:
+        # An interference/grip/retention fit -- e.g. the broom-holder 30 mm grip fins.
+        interface = {
+            "id": "I-GRIP-01",
+            "fit_type": "retention",
+            "contact_state": "elastic grip, deflect-to-insert",
+            "min_mm": -0.30,
+            "max_mm": -0.10,
+            "motion_path": "snap over 30 mm handle, radial deflection",
+            "material": "PETG fin on painted-steel handle",
+            "coupon_required": True,
+            "acceptance_method": "hold a 2 kg static load for 60 s without slip",
+        }
+        interface.update(overrides)
+        return interface
+
+    def test_absent_interfaces_passes_backward_compatibly(self) -> None:
+        result = team_preflight.validate_interfaces({"schema_version": 4})
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["interface_ids"], [])
+        self.assertEqual(result["errors"], [])
+
+    def test_null_interfaces_passes_backward_compatibly(self) -> None:
+        result = team_preflight.validate_interfaces({"schema_version": 4, "interfaces": None})
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["errors"], [])
+
+    def test_clearance_interface_passes(self) -> None:
+        plan = {"interfaces": [self.clearance_interface()]}
+        result = team_preflight.validate_interfaces(plan)
+        self.assertEqual(result["result"], "PASS", result["errors"])
+        self.assertEqual(result["interface_ids"], ["I-CLR-01"])
+
+    def test_interference_interface_passes(self) -> None:
+        plan = {"interfaces": [self.interference_interface()]}
+        result = team_preflight.validate_interfaces(plan)
+        self.assertEqual(result["result"], "PASS", result["errors"])
+        self.assertEqual(result["interface_ids"], ["I-GRIP-01"])
+
+    def test_both_fit_types_together_pass(self) -> None:
+        plan = {"interfaces": [self.clearance_interface(), self.interference_interface()]}
+        result = team_preflight.validate_interfaces(plan)
+        self.assertEqual(result["result"], "PASS", result["errors"])
+        self.assertEqual(sorted(result["interface_ids"]), ["I-CLR-01", "I-GRIP-01"])
+
+    def test_interfaces_not_a_list_fails(self) -> None:
+        result = team_preflight.validate_interfaces({"interfaces": {"id": "I-01"}})
+        self.assertEqual(result["result"], "FAIL")
+        self.assertTrue(any("interfaces" in e and "list" in e for e in result["errors"]))
+
+    def test_missing_required_field_fails(self) -> None:
+        interface = self.clearance_interface()
+        del interface["material"]
+        result = team_preflight.validate_interfaces({"interfaces": [interface]})
+        self.assertEqual(result["result"], "FAIL")
+        self.assertTrue(
+            any("I-CLR-01" in e and "material" in e for e in result["errors"]), result["errors"]
+        )
+
+    def test_bad_fit_type_enum_fails(self) -> None:
+        interface = self.clearance_interface(fit_type="press_fit_but_not_a_real_enum_value")
+        result = team_preflight.validate_interfaces({"interfaces": [interface]})
+        self.assertEqual(result["result"], "FAIL")
+        self.assertTrue(
+            any("I-CLR-01" in e and "fit_type" in e for e in result["errors"]), result["errors"]
+        )
+
+    def test_non_finite_range_fails(self) -> None:
+        for bad in (float("nan"), float("inf"), float("-inf"), None, True, "0.2"):
+            with self.subTest(bad=bad):
+                interface = self.clearance_interface(min_mm=bad)
+                result = team_preflight.validate_interfaces({"interfaces": [interface]})
+                self.assertEqual(result["result"], "FAIL")
+                self.assertTrue(
+                    any("I-CLR-01" in e and "min_mm" in e for e in result["errors"]),
+                    result["errors"],
+                )
+
+    def test_max_below_min_fails(self) -> None:
+        interface = self.clearance_interface(min_mm=0.30, max_mm=0.15)
+        result = team_preflight.validate_interfaces({"interfaces": [interface]})
+        self.assertEqual(result["result"], "FAIL")
+        self.assertTrue(
+            any("I-CLR-01" in e and "max_mm" in e for e in result["errors"]), result["errors"]
+        )
+
+    def test_negative_clearance_range_fails(self) -> None:
+        interface = self.clearance_interface(min_mm=-0.10, max_mm=0.10)
+        result = team_preflight.validate_interfaces({"interfaces": [interface]})
+        self.assertEqual(result["result"], "FAIL")
+        self.assertTrue(
+            any("I-CLR-01" in e and "clearance" in e for e in result["errors"]), result["errors"]
+        )
+
+    def test_negative_interference_range_passes(self) -> None:
+        # The whole point of "no universal zero-interference rule": a non-clearance fit type
+        # may be fully negative (intersecting) on both sides.
+        interface = self.interference_interface(min_mm=-0.30, max_mm=-0.10)
+        result = team_preflight.validate_interfaces({"interfaces": [interface]})
+        self.assertEqual(result["result"], "PASS", result["errors"])
+
+    def test_duplicate_interface_id_fails(self) -> None:
+        plan = {
+            "interfaces": [
+                self.clearance_interface(),
+                self.clearance_interface(min_mm=0.1, max_mm=0.2),
+            ]
+        }
+        result = team_preflight.validate_interfaces(plan)
+        self.assertEqual(result["result"], "FAIL")
+        self.assertTrue(
+            any("I-CLR-01" in e and "duplicate" in e for e in result["errors"]), result["errors"]
+        )
+
+    def test_coupon_required_not_bool_fails(self) -> None:
+        interface = self.clearance_interface(coupon_required="yes")
+        result = team_preflight.validate_interfaces({"interfaces": [interface]})
+        self.assertEqual(result["result"], "FAIL")
+        self.assertTrue(
+            any("I-CLR-01" in e and "coupon_required" in e for e in result["errors"]),
+            result["errors"],
+        )
+
+    def test_validate_interfaces_cli(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            plan = {
+                "schema_version": 4,
+                "interfaces": [self.clearance_interface(), self.interference_interface()],
+            }
+            plan_path = directory / "print_plan_checks.json"
+            plan_path.write_text(json.dumps(plan), encoding="utf-8")
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(team_preflight.__file__)),
+                    "validate-interfaces",
+                    "--plan",
+                    str(plan_path),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            payload = json.loads(completed.stdout)
+            self.assertEqual(payload["result"], "PASS")
+            self.assertEqual(sorted(payload["interface_ids"]), ["I-CLR-01", "I-GRIP-01"])
+
+    def test_validate_interfaces_cli_fails_on_bad_enum(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            plan = {
+                "schema_version": 4,
+                "interfaces": [self.clearance_interface(fit_type="not-a-fit-type")],
+            }
+            plan_path = directory / "print_plan_checks.json"
+            plan_path.write_text(json.dumps(plan), encoding="utf-8")
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(team_preflight.__file__)),
+                    "validate-interfaces",
+                    "--plan",
+                    str(plan_path),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            self.assertEqual(json.loads(completed.stdout)["result"], "FAIL")
+
+
 if __name__ == "__main__":
     unittest.main()

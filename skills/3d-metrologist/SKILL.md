@@ -49,13 +49,12 @@ render-over-photo overlays.
    and a datum/bounded envelope or explicit shared-envelope response for every visible
    feature.
 5. Record each design-driving dimension with value/range, units, provenance, method, confidence
-   (`A measured`, `B official/corroborated`, `C image-derived`, `D assumed`), and datum.
-   For a **fit-driving clearance, specify a bounded fit BAND** — a fit class from
-   `fdm-design.md` §4 (press/snug/sliding/loose/free) with an explicit min **and** max per side
-   — never an open-ended floor. Over-clearance (slop, wobble, a captured part that slips or
-   rattles) is a failure mode exactly like interference; do not write "designer may increase"
-   without an upper bound. A snug non-moving capture around a known feature targets snug–sliding
-   (≈0.1–0.3 mm/side), not "≥0.3 and whatever is convenient."
+   (`A measured`, `B official/corroborated`, `C image-derived`, `D assumed`), and datum. For a
+   mating/fit-relevant feature, record the **as-observed geometry and its measurement
+   uncertainty** (instrument resolution, repeat-read spread, near-feature bias) — never a fit
+   class, clearance band, or interference allowance. Fit strategy is the print engineer's
+   decision in `print_plan.md`, made from this as-observed geometry plus its uncertainty; the
+   metrologist does not choose clearance, interference, or contact intent.
 6. Never silently average conflicts or convert an assumed visual proportion into a measured
    fact. Put unresolved conflicts in open questions with their downstream effect.
 7. Mark the minimum set of blocking unknowns that prevents reference construction.

@@ -16,6 +16,25 @@ import trimesh
 SCHEMA_VERSION = 4
 TOOL_VERSION = "1.0"
 
+# H-03: fit strategy is print-engineer-owned and declared per interface in
+# `print_plan_checks.json`. Every entry must name a fit type from this closed set --
+# spanning clearance through interference/retention/compliant-mechanism intent, with no
+# universal zero-interference rule.
+INTERFACE_FIT_TYPES = frozenset(
+    {
+        "clearance",
+        "transition",
+        "interference",
+        "elastic_contact",
+        "crush_rib",
+        "snap",
+        "retention",
+        "seal",
+        "thread",
+        "compliant",
+    }
+)
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -405,6 +424,93 @@ def validate_receipts(
     }
 
 
+def validate_interfaces(plan: dict[str, Any]) -> dict[str, Any]:
+    """Validate the optional `print_plan_checks.json` `"interfaces"` array (H-03).
+
+    `interfaces` is the machine-enforced per-interface fit-strategy declaration the print
+    engineer owns (see team-contracts-v4.md `print_plan.md`): clearance, transition,
+    interference, intended elastic contact, crush ribs, snap engagement, retention, seals,
+    threads, and compliant mechanisms all share one schema -- there is no universal
+    zero-interference rule.
+
+    Backward-compatible: a plan with no `interfaces` key (or `null`) PASSes with an empty
+    `interface_ids` list -- older plans are unaffected. When the key is present, every entry
+    is fully validated and any malformed entry FAILs with a field/ID-named error, mirroring
+    `validate_receipts`'s error style. Reuses `_finite` for numeric fields so NaN/Inf/bool/
+    None/non-numeric handling matches the rest of this module exactly.
+    """
+    errors: list[str] = []
+    interface_ids: list[str] = []
+    raw = plan.get("interfaces")
+
+    if raw is not None:
+        if not isinstance(raw, list):
+            errors.append("interfaces: expected a list")
+        else:
+            seen_ids: set[str] = set()
+            for index, row in enumerate(raw):
+                if not isinstance(row, dict):
+                    errors.append(f"interfaces[{index}]: expected an object")
+                    continue
+                interface_id = row.get("id")
+                if not isinstance(interface_id, str) or not interface_id:
+                    errors.append(f"interfaces[{index}]: id must be a non-empty string")
+                    continue
+                if interface_id in seen_ids:
+                    errors.append(f"{interface_id}: duplicate interface id")
+                    continue
+                seen_ids.add(interface_id)
+                interface_ids.append(interface_id)
+
+                fit_type = row.get("fit_type")
+                if fit_type not in INTERFACE_FIT_TYPES:
+                    errors.append(
+                        f"{interface_id}: fit_type must be one of "
+                        f"{sorted(INTERFACE_FIT_TYPES)}, got {fit_type!r}"
+                    )
+
+                if not isinstance(row.get("contact_state"), str) or not row.get("contact_state"):
+                    errors.append(f"{interface_id}: contact_state must be a non-empty string")
+
+                min_ok = _finite(row.get("min_mm"))
+                max_ok = _finite(row.get("max_mm"))
+                if not min_ok:
+                    errors.append(f"{interface_id}: min_mm must be a finite number")
+                if not max_ok:
+                    errors.append(f"{interface_id}: max_mm must be a finite number")
+                if min_ok and max_ok:
+                    min_mm = float(row["min_mm"])
+                    max_mm = float(row["max_mm"])
+                    if max_mm < min_mm:
+                        errors.append(f"{interface_id}: max_mm must be >= min_mm")
+                    # Only `clearance` is a pure gap that can never be negative. Every other
+                    # fit type (interference, crush_rib, snap, retention, ...) may declare a
+                    # deliberately negative, intersecting range -- that is the point of H-03's
+                    # "no universal zero-interference rule".
+                    if fit_type == "clearance" and (min_mm < 0 or max_mm < 0):
+                        errors.append(
+                            f"{interface_id}: clearance fit_type requires min_mm and "
+                            "max_mm >= 0 (a clearance fit cannot be negative)"
+                        )
+
+                for field in ("motion_path", "material", "acceptance_method"):
+                    if not isinstance(row.get(field), str) or not row.get(field):
+                        errors.append(f"{interface_id}: {field} must be a non-empty string")
+
+                if not isinstance(row.get("coupon_required"), bool):
+                    errors.append(f"{interface_id}: coupon_required must be a boolean")
+
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "tool": "team_preflight.py",
+        "tool_version": TOOL_VERSION,
+        "kind": "interfaces-validation",
+        "interface_ids": sorted(interface_ids),
+        "errors": errors,
+        "result": "PASS" if not errors else "FAIL",
+    }
+
+
 def write_result(result: dict[str, Any], output: Path | None) -> None:
     payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if output is None:
@@ -442,6 +548,17 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--plan", required=True, type=Path)
     validate.add_argument("--readiness", required=True, type=Path)
     validate.add_argument("--output", type=Path)
+
+    interfaces = subparsers.add_parser(
+        "validate-interfaces",
+        help=(
+            "Validate the optional print_plan_checks.json `interfaces` array (H-03 "
+            "per-interface fit-strategy declaration). Absent `interfaces` PASSes "
+            "(backward-compatible); a present array is fully validated."
+        ),
+    )
+    interfaces.add_argument("--plan", required=True, type=Path)
+    interfaces.add_argument("--output", type=Path)
     return parser
 
 
@@ -454,6 +571,8 @@ def main() -> int:
                 plan_path=args.plan.resolve(),
                 rule_id=args.rule_id,
             )
+        elif args.command == "validate-interfaces":
+            result = validate_interfaces(load_json(args.plan.resolve()))
         else:
             result = validate_receipts(
                 stl_path=args.stl.resolve(),
