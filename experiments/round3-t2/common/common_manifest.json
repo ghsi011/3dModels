@@ -1,0 +1,22 @@
+{
+  "experiment": "round3-t2-style-export-integrity",
+  "frozen_commit": "33b6db717439dfad4656b0ee28dda9d88a74fc94",
+  "inputs": {
+    "brief.md": {
+      "sha256": "e82b8a49c74797732abb795587ff57c4e29d6c647c832e944b0084d3c269ac26"
+    },
+    "evidence/fixture_views.svg": {
+      "sha256": "495ad7bede3796f3707a6ad410a5d1b71ae2233d2d1d43c20912ea1364758c2c",
+      "provenance": "Synthetic participant-facing caliper schematic built from the declared T2-style fixture facts; not an original historical photo."
+    }
+  },
+  "skills": {
+    "monolith_skill_git_blob": "d1bca453122cf44892a49c9997e35547f3abdde3",
+    "team_v3_orchestrator_git_blob": "c8ca7e7bb55689c2bc6d8024e73666e7edb58735",
+    "team_v3_contracts_git_blob": "588f23f2d9d3865368f6b8b47773198052a9c14b"
+  },
+  "model": "gpt-5.6-terra",
+  "backend": "cadquery",
+  "freecad_allowed": false,
+  "token_policy": "Report runtime telemetry only when exposed; never estimate tokens from artifacts or commission count."
+}

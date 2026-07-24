@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f8f8f5"/>
+  <style>
+    .shape { fill: #d9dde2; stroke: #20262d; stroke-width: 4; }
+    .bar { fill: #8f9aa6; stroke: #20262d; stroke-width: 4; }
+    .dim { fill: none; stroke: #bf3b2b; stroke-width: 3; marker-start: url(#arrow); marker-end: url(#arrow); }
+    .guide { fill: none; stroke: #bf3b2b; stroke-width: 2; stroke-dasharray: 7 7; }
+    .motion { fill: none; stroke: #2074a0; stroke-width: 5; marker-end: url(#blueArrow); }
+    .label { font: 26px Arial, sans-serif; fill: #20262d; }
+    .small { font: 20px Arial, sans-serif; fill: #4b5560; }
+    .dlabel { font: bold 23px Arial, sans-serif; fill: #a12d20; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#bf3b2b"/>
+    </marker>
+    <marker id="blueArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2074a0"/>
+    </marker>
+  </defs>
+
+  <text x="55" y="58" class="label">Participant evidence: schematic caliper views</text>
+  <text x="55" y="90" class="small">All dimensions in millimetres. Geometry is schematic; numeric dimensions govern.</text>
+
+  <text x="120" y="145" class="label">Top view</text>
+  <circle cx="325" cy="350" r="157.5" class="shape"/>
+  <rect x="170" y="321" width="310" height="58.5" rx="9" class="bar"/>
+  <line x1="167.5" y1="555" x2="482.5" y2="555" class="dim"/>
+  <line x1="167.5" y1="505" x2="167.5" y2="575" class="guide"/>
+  <line x1="482.5" y1="505" x2="482.5" y2="575" class="guide"/>
+  <text x="287" y="592" class="dlabel">Ø63.0</text>
+  <line x1="170" y1="260" x2="480" y2="260" class="dim"/>
+  <line x1="170" y1="275" x2="170" y2="320" class="guide"/>
+  <line x1="480" y1="275" x2="480" y2="320" class="guide"/>
+  <text x="290" y="245" class="dlabel">62.0</text>
+  <line x1="520" y1="321" x2="520" y2="379.5" class="dim"/>
+  <line x1="480" y1="321" x2="540" y2="321" class="guide"/>
+  <line x1="480" y1="379.5" x2="540" y2="379.5" class="guide"/>
+  <text x="535" y="359" class="dlabel">11.7</text>
+
+  <text x="690" y="145" class="label">Side view through bar centre</text>
+  <rect x="665" y="475" width="420" height="40" rx="18" class="shape"/>
+  <rect x="790" y="235" width="170" height="240" rx="10" class="bar"/>
+  <line x1="1025" y1="235" x2="1025" y2="475" class="dim"/>
+  <line x1="960" y1="235" x2="1045" y2="235" class="guide"/>
+  <line x1="960" y1="475" x2="1045" y2="475" class="guide"/>
+  <text x="1042" y="365" class="dlabel">24.0</text>
+  <text x="755" y="550" class="small">cap face</text>
+  <text x="810" y="220" class="small">raised cross-bar</text>
+
+  <path d="M 875 175 C 760 150, 705 210, 710 315" class="motion"/>
+  <text x="680" y="120" class="small">tool engages over bar</text>
+  <path d="M 705 610 C 830 675, 965 645, 1050 560" class="motion"/>
+  <text x="760" y="710" class="small">hand torque about cap axis</text>
+
+  <rect x="60" y="665" width="520" height="80" rx="12" fill="#fff" stroke="#aeb6bf" stroke-width="2"/>
+  <text x="80" y="700" class="small">Protect the appliance: no teeth or sharp appliance-contact edges.</text>
+  <text x="80" y="730" class="small">The tool may be open-ended or closed, but must engage securely.</text>
+</svg>
