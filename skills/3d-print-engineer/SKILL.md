@@ -74,10 +74,13 @@ verification.
    (`team_preflight.py`) flags faces whose transformed normal is below `downward_normal_z_max`;
    an *intended* self-supporting 45° chamfer (bed elephant-foot, self-support ramp) tessellates
    to just past `-cos(45°) = -0.70710678` and is then falsely flagged as an overhang (observed on
-   the Pixel, Garmin, and broom bed chamfers). Set the threshold at roughly `-cos(47°) ≈ -0.682`
-   (flag genuine overhangs steeper than ~47°), or require the designer to make intended
-   self-supporting chamfers a couple degrees shallower than 45° — do not sit them exactly on the
-   boundary. The screen is a conservative orientation check, not a supportability proof.
+   the Pixel, Garmin, and broom bed chamfers). Set the threshold a touch **more negative** than
+   `-0.7071` — about `-0.73` (`-sin(47°)`), flagging only overhangs steeper than ~47° — so an
+   exact-45° self-supporting chamfer (whose facets tessellate to 45.0–46°) clears. Validated on the
+   broom clip: out-of-limit 17.6 → 0.0 mm² at `-0.73`. Equivalently, require the designer to make
+   intended self-supporting chamfers a couple degrees **less overhanging** than 45° (e.g. 42°), not
+   sitting exactly on the boundary. The screen is a conservative orientation check, not a
+   supportability proof.
 6. Define multi-colour/body/nozzle constraints and purge/contamination risks.
 7. Define the fit coupon region and pass/fail measurements for every interface that declared a
    coupon/calibration requirement, before the designer begins. Default to one multi-lane

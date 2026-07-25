@@ -149,9 +149,13 @@ Cost ~34 min, 334k tokens. NOT_READY on the one recurring finding below.
   yet stress-validated; needs a fillet-failing part.
 - **Systematic recurring bug (3rd time — Pixel/Garmin/broom):** an intended **45° bed chamfer**
   tessellates just past the `-0.70710678` screen threshold → falsely flagged as overhang.
-  **Fix (optimization #2):** print-engineer slice now says set the screen threshold with a small
-  margin (`≈ -cos(47°)`) or make self-support chamfers a few degrees shallower than 45° — do not
-  sit exactly on the boundary.
+  **Fix (optimization #2):** print-engineer slice now says set the screen threshold a touch
+  **more negative** (`≈ -0.73`, `-sin(47°)`, flag overhangs steeper than ~47°) so an exact-45°
+  self-supporting chamfer clears; or make self-support chamfers a couple degrees *less overhanging*
+  than 45°. **Validated by a cheap re-audit** of the broom clip: out-of-limit 17.6 → 0.0 mm² at
+  `-0.73`. (That re-audit also caught a sign error in the first draft of this fix — I'd written
+  `-cos(47°) ≈ -0.682`, which is *less* negative and flags *more*; corrected to `-0.73`. Good
+  example of the validate-before-promote gate working.)
 - **Firewall lesson (honest self-report):** the agent read *other parts'* eval folders
   (pixel/garmin) for contract-format examples, violating the "no other tests/ folders" line —
   but did NOT read the broom answer 3MF (no design leak). Lesson: **provide format examples in the
