@@ -1,0 +1,83 @@
+{
+  "contract": "artifact-manifest",
+  "contract_version": 1,
+  "job_id": "broom-holder-step1-metrology",
+  "candidate_id": "broom-step4-design",
+  "units": "mm",
+  "updated_utc": "2026-07-25T00:00:00Z",
+  "artifacts": [
+    {
+      "id": "clip-stl",
+      "role": "candidate",
+      "path": "clip.stl",
+      "type": "stl",
+      "sha256": "0a469ec13bb85d39d505102ecdedaeeb3946076eab1aca9ee22781901d14f529",
+      "expected_components": 1,
+      "bbox": {
+        "min": [-21.0, -18.0, 0.0],
+        "max": [4.1910319328308105, 18.0, 24.0]
+      },
+      "source_revisions": {"dimensions": 1, "print_plan": 1},
+      "printable_deliverable": true,
+      "paired_artifact_id": "clip-step"
+    },
+    {
+      "id": "clip-step",
+      "role": "candidate",
+      "path": "clip.step",
+      "type": "step",
+      "sha256": "4c744dc3d1a21ec5bca52a47c201e5a2ea47b8b581fae8f0774a20849dde47b1",
+      "source_revisions": {"dimensions": 1, "print_plan": 1},
+      "printable_deliverable": true
+    },
+    {
+      "id": "clip-model-py",
+      "role": "source",
+      "path": "clip_model.py",
+      "type": "py",
+      "sha256": "1e45e469c39e853de8b3241760430b7386815e083bfb534e0eb3fc862a42abc7",
+      "source_revisions": {"dimensions": 1, "print_plan": 1},
+      "printable_deliverable": false
+    },
+    {
+      "id": "verify-py",
+      "role": "other",
+      "path": "verify.py",
+      "type": "py",
+      "sha256": "71272729f4b8617a4f7fdc9490e6510a6481efd3f640620873a873bffdc7a066",
+      "printable_deliverable": false
+    },
+    {
+      "id": "render-clip-py",
+      "role": "other",
+      "path": "render_clip.py",
+      "type": "py",
+      "sha256": "32990c4d77cb9ffd1418ea9aa8bff9acd4b8ac0bceb86b73eafac25629e0736e",
+      "printable_deliverable": false
+    },
+    {
+      "id": "clip-exterior-view",
+      "role": "render",
+      "path": "clip_exterior_view.png",
+      "type": "png",
+      "sha256": "7ac1aff54eef43352c8148b8b3bf4dab909df4aad414822d063c8f42f10bb3f3",
+      "printable_deliverable": false
+    },
+    {
+      "id": "clip-section-fin-grip",
+      "role": "render",
+      "path": "clip_section_fin_grip.png",
+      "type": "png",
+      "sha256": "42da4363a26d25c514cb98f1ce168e11cfdf63d55d3c313b5b63dcab3b5d0672",
+      "printable_deliverable": false
+    },
+    {
+      "id": "clip-print-orientation",
+      "role": "render",
+      "path": "clip_print_orientation.png",
+      "type": "png",
+      "sha256": "813962559ed3b7d67950b4580a1e04f1427974c579fe5289f5d3f219836324d7",
+      "printable_deliverable": false
+    }
+  ]
+}

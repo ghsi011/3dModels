@@ -1,0 +1,191 @@
+{
+  "clip_watertight": true,
+  "clip_volume_mm3": 7763.8853125308715,
+  "clip_bounds": [
+    [
+      -21.0,
+      -18.0,
+      -7.771561172376096e-16
+    ],
+    [
+      4.1910319328308105,
+      18.0,
+      24.0
+    ]
+  ],
+  "clip_components": 1,
+  "seated_interference_mm3": 503.479176112635,
+  "snap_through_sweep": [
+    {
+      "rod_center_x_mm": 60,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 45,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 30,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 22,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 18,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 15,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 12,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 10,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 8,
+      "interference_mm3": 0.0
+    },
+    {
+      "rod_center_x_mm": 6,
+      "interference_mm3": 26.164563890760686
+    },
+    {
+      "rod_center_x_mm": 4,
+      "interference_mm3": 65.8113675288502
+    },
+    {
+      "rod_center_x_mm": 2,
+      "interference_mm3": 101.82306004118732
+    },
+    {
+      "rod_center_x_mm": 0,
+      "interference_mm3": 503.479176112635
+    }
+  ],
+  "fin_tip_radius_min_mm": 14.59544306905406,
+  "fin_tip_radius_max_mm": 14.600000623061598,
+  "fin_tip_radius_mean_mm": 14.597704028554048,
+  "fin_tip_id_mean_mm": 29.195408057108097,
+  "diametral_interference_vs_rod_mm": -0.8045919428919035,
+  "mouth_chord_mm": 28.804410934448242,
+  "min_wall_thickness_mm": 1.9045600891113281,
+  "e01_tip_fillet_samples": [
+    {
+      "tip": "start",
+      "side": "OD",
+      "fitted_radius_mm": 0.8479095326995643,
+      "center_distance_range_mm": [
+        0.8520180112707605,
+        0.8523561082845577
+      ]
+    },
+    {
+      "tip": "start",
+      "side": "ID",
+      "fitted_radius_mm": 0.8688987244168287,
+      "center_distance_range_mm": [
+        0.9014278398741169,
+        0.920974189936093
+      ]
+    },
+    {
+      "tip": "end",
+      "side": "OD",
+      "fitted_radius_mm": 0.8479095326995643,
+      "center_distance_range_mm": [
+        0.852018011270747,
+        0.8523561082845442
+      ]
+    },
+    {
+      "tip": "end",
+      "side": "ID",
+      "fitted_radius_mm": 0.8687098367248537,
+      "center_distance_range_mm": [
+        0.9014278398741161,
+        0.9206380847602543
+      ]
+    }
+  ],
+  "e01_top_rim_od_fillet_samples": [
+    {
+      "angle_deg": 100,
+      "offset_at_h_mm": 0.6048750168803565,
+      "fitted_radius_mm": 0.9008170866610992
+    },
+    {
+      "angle_deg": 260,
+      "offset_at_h_mm": 0.6048747925273226,
+      "fitted_radius_mm": 0.90081681669711
+    }
+  ],
+  "e01_flange_corner_samples": [
+    {
+      "corner": "+Y",
+      "fitted_radius_mm": 0.8997286947423303
+    },
+    {
+      "corner": "-Y",
+      "fitted_radius_mm": 0.8997286947432465
+    }
+  ],
+  "e02_bed_chamfer_samples": [
+    {
+      "region": "ring_od",
+      "angle_deg": 95,
+      "chamfer_run_mm": 0.3000173773281844
+    },
+    {
+      "region": "ring_od",
+      "angle_deg": 105,
+      "chamfer_run_mm": 0.3000550943716533
+    },
+    {
+      "region": "ring_od",
+      "angle_deg": 115,
+      "chamfer_run_mm": 0.3001159044857175
+    },
+    {
+      "region": "ring_od",
+      "angle_deg": 245,
+      "chamfer_run_mm": 0.3001159044857175
+    },
+    {
+      "region": "ring_od",
+      "angle_deg": 255,
+      "chamfer_run_mm": 0.3000550943716533
+    },
+    {
+      "region": "ring_od",
+      "angle_deg": 265,
+      "chamfer_run_mm": 0.3000173773281844
+    },
+    {
+      "region": "flange_outer_face",
+      "y_mm": -8.0,
+      "sample_y_actual_mm": -17.100000381469727,
+      "chamfer_run_mm": 0.2999993662039408
+    },
+    {
+      "region": "flange_outer_face",
+      "y_mm": 0.0,
+      "sample_y_actual_mm": 11.400000480810725,
+      "chamfer_run_mm": 0.29999936620393725
+    },
+    {
+      "region": "flange_outer_face",
+      "y_mm": 8.0,
+      "sample_y_actual_mm": 11.400000480810725,
+      "chamfer_run_mm": 0.29999936620393725
+    }
+  ],
+  "clip_stl_sha256": "0a469ec13bb85d39d505102ecdedaeeb3946076eab1aca9ee22781901d14f529",
+  "clip_step_sha256": "4c744dc3d1a21ec5bca52a47c201e5a2ea47b8b581fae8f0774a20849dde47b1"
+}

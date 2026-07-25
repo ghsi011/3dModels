@@ -1,0 +1,85 @@
+{
+  "schema_version": 4,
+  "job_id": "broom-holder-step1-metrology",
+  "print_plan_revision": 1,
+  "dimensions_revision": 1,
+  "reference_sha256": "546942bfda2b8fa5cfa2c8f0b6bc63c4b6ef53c7a392750e4a586bf7b0e30da2",
+  "candidate_predicate_revision": 1,
+  "notes": "Designer-synthesized machine-readable projection of the print-plan/interface declaration provided directly in this commission's dispatch prompt (no separately-dispatched print-engineer print_plan.md exists on disk for this job at this revision -- the commission text itself states 'treat as the accepted plan'). All numeric bands below are copied verbatim from that dispatch text, not designer-chosen. Per broom-step2-reference/reference_manifest.md, the upstream dimensions.md is still status=DRAFT and its own 'Reference round trip' table is still PENDING (no metrologist/photo overlay verdict yet) -- this print-plan-checks file and the candidate it gates do not resolve that upstream gate; they proceed on the commission's explicit instruction to treat the given interface declaration as accepted for this design round.",
+  "process": {
+    "material": "PETG",
+    "printer": "Bambu X2D",
+    "nozzle_mm": 0.4,
+    "layer_mm": 0.2,
+    "min_wall_mm": 1.2
+  },
+  "model_to_printer_transform": {
+    "matrix": [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]],
+    "bed_contact_landmark": "ring bottom rim (Z=0) + mounting-flange bottom face (Z=0)",
+    "note": "IDENTITY -- clip.stl IS the print-frame STL. Ring axis is modeled along +Z; every print layer is a complete horizontal C-shaped slice (support-free for the ring itself). Mouth opens toward +X, i.e. LATERAL in the print's horizontal plane, matching the plan's 'prefer support-free (the C-opening lateral)' guidance."
+  },
+  "geometry_rules": [
+    {
+      "id": "G-01",
+      "rule": "min_wall_thickness",
+      "min_wall_mm": 1.2,
+      "source": "commission print-plan text: 'wall >=1.2mm'",
+      "required_now": true,
+      "deferred_owner": "none",
+      "final_gate": "verifier rejects any candidate whose re-imported-STL wall thickness falls under 1.2mm"
+    },
+    {
+      "id": "G-02",
+      "rule": "mounting_back_flat_face",
+      "requirement": "a flat mounting-back face suitable to be screwed or stuck to a wall",
+      "source": "commission print-plan text: 'A mounting back (flat face) so it can be screwed/stuck to a wall; keep it simple.'",
+      "required_now": true,
+      "deferred_owner": "none",
+      "final_gate": "none"
+    }
+  ],
+  "edges": [
+    {
+      "id": "E-01",
+      "description": "Exposed hand-contact comfort edges: the 4 fin-tip/mouth corner edges (OD+ID x 2 tips), the top rim (OD+ID) of the partial-wrap ring, and the mounting flange's own outer vertical perimeter corners -- all touched during snap-on/off and installation.",
+      "exposure_class": "EXPOSED_COMFORT",
+      "min_radius_mm": 0.8,
+      "max_radius_mm": null,
+      "samples_required": 8
+    },
+    {
+      "id": "E-02",
+      "description": "Bed-contact perimeter chamfer (Z=0): ring bottom OD/ID rim + tip bottoms + mounting-flange bottom perimeter, for elephant-foot immunity.",
+      "exposure_class": "BED_CONTACT",
+      "min_radius_mm": 0.2,
+      "max_radius_mm": 0.4,
+      "samples_required": 6
+    }
+  ],
+  "support_rules": [
+    {
+      "id": "S-01",
+      "region": "whole_mesh_catch_all",
+      "disposition": "SELF_SUPPORT_REQUIRED",
+      "model_to_printer_matrix": [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]],
+      "bed_z_mm": 0,
+      "bed_tolerance_mm": 0.05,
+      "downward_normal_z_max": -0.70710678,
+      "max_out_of_limit_area_mm2": 5.0,
+      "note": "Small nonzero budget (not 0) is deliberate, not a loosened gate for convenience: the E-02 bed-contact 45deg chamfer's own faces sit exactly at this screen's -0.7071 (45deg) classification threshold -- the same borderline-classification artifact documented in tests/eval/pixel-step4-design/candidate_readiness.md for its G-04 rim chamfer. This is an intended, plan-required feature (not a support region), so a small tolerance for that edge case is budgeted up front rather than discovered and rationalized after a FAIL. See candidate_readiness.md for the actual measured area and its breakdown."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "I-1",
+      "fit_type": "retention",
+      "contact_state": "compliant retention (elastic ring/fin deflection), snap-on/off",
+      "min_mm": -1.0,
+      "max_mm": -0.6,
+      "motion_path": "radial snap through the open mouth (~150deg opening); rod approaches along -X toward the concentric/seated position at the ring's own axis",
+      "material": "PETG clip on a Ø30.0mm round rod (generic/wood broom handle per tests/eval/broom-step2-reference)",
+      "coupon_required": false,
+      "acceptance_method": "grips a Ø30mm rod without slipping under the rod's own/light lateral load; releases by a deliberate hand pull -- per commission text, not a printed-coupon gauge-pin test this round"
+    }
+  ]
+}

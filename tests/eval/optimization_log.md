@@ -140,6 +140,24 @@ last resort **declare `allowed_sharp` with a reason** (never an undeclared sharp
 attacks the bulk (don't distort the part to dodge a fillet). Multi-part evidenced, general
 principle; **validate on the next design run.** Broom ② = clean Ø30 reference (trivial).
 
+## Broom ④ — Grip-clip design + Design-step optimization #2 (45° screen margin)
+Cost ~34 min, 334k tokens. NOT_READY on the one recurring finding below.
+- **H-03 interference interface validated at geometry level:** C-spring clip grips the Ø30 rod at
+  **−0.805 mm** diametral interference (band −1.0..−0.6), `validate-interfaces` PASS, comfort edges
+  0.85–0.90 ≥0.8. Negative-range retention fit works.
+- Fillet ladder **not exercised** (clip fillets succeeded first try) — fix confirmed harmless, not
+  yet stress-validated; needs a fillet-failing part.
+- **Systematic recurring bug (3rd time — Pixel/Garmin/broom):** an intended **45° bed chamfer**
+  tessellates just past the `-0.70710678` screen threshold → falsely flagged as overhang.
+  **Fix (optimization #2):** print-engineer slice now says set the screen threshold with a small
+  margin (`≈ -cos(47°)`) or make self-support chamfers a few degrees shallower than 45° — do not
+  sit exactly on the boundary.
+- **Firewall lesson (honest self-report):** the agent read *other parts'* eval folders
+  (pixel/garmin) for contract-format examples, violating the "no other tests/ folders" line —
+  but did NOT read the broom answer 3MF (no design leak). Lesson: **provide format examples in the
+  commission** (or a `team_tools render` of an example) so agents don't reach for sibling folders;
+  the oracle firewall (3MF/reference) is the one that must hold, and it did.
+
 ## Garmin ① — Metrology (cross-part validation) — DONE, PASS + fixes PROMOTED
 Cost ~13.6 min, 201,234 tokens, 46 tools. Blind (photos+calipers+specs; dock 3MF held out —
 result-divergence confirms: it produced 51.75 mm, not the dock's seat number).
