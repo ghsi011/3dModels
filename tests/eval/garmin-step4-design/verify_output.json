@@ -1,0 +1,94 @@
+{
+  "cradle_watertight": true,
+  "cradle_volume_mm3": 163061.04143314928,
+  "cradle_bounds": [
+    [
+      -49.995933532714844,
+      -33.91426086425781,
+      -5.328968556609726e-16
+    ],
+    [
+      49.99577331542969,
+      65.5772705078125,
+      42.2949104309082
+    ]
+  ],
+  "cradle_components": 1,
+  "coupon_watertight": true,
+  "coupon_components": 1,
+  "montecarlo_watch_interior_samples": 79008,
+  "montecarlo_hits_in_cradle_total": 355,
+  "montecarlo_hits_away_from_floor_plane_gt0p2mm": 0,
+  "interference_general_bore_mm3": 0.0,
+  "interference_at_lip_only_mm3": 37.87340591464929,
+  "interference_full_incl_lip_mm3_raw_boolean": 145.64820728630912,
+  "insertion_sweep": [
+    {
+      "travel_mm": -3,
+      "interference_mm3": 6877.095270278416
+    },
+    {
+      "travel_mm": -1,
+      "interference_mm3": 2370.156871843437
+    },
+    {
+      "travel_mm": 0,
+      "interference_mm3": 145.64820728630912
+    },
+    {
+      "travel_mm": 1,
+      "interference_mm3": 46.4165816936409
+    },
+    {
+      "travel_mm": 2,
+      "interference_mm3": 46.4165799421988
+    },
+    {
+      "travel_mm": 3,
+      "interference_mm3": 46.416577845198844
+    },
+    {
+      "travel_mm": 5,
+      "interference_mm3": 46.41657319268597
+    },
+    {
+      "travel_mm": 8,
+      "interference_mm3": 46.416583053834415
+    },
+    {
+      "travel_mm": 12,
+      "interference_mm3": 46.416586646133396
+    },
+    {
+      "travel_mm": 16,
+      "interference_mm3": 0.0
+    },
+    {
+      "travel_mm": 20,
+      "interference_mm3": 0.0
+    }
+  ],
+  "bore_diam_slices_at_z1": [
+    [
+      52.024945164236755,
+      52.45323865433976
+    ]
+  ],
+  "local_bounds": [
+    [
+      -49.995933532714844,
+      -38.30662119050718,
+      -46.15923697605573
+    ],
+    [
+      49.99577331542969,
+      50.00000006787011,
+      15.150001655011097
+    ]
+  ],
+  "min_wall_thickness_mm": 0.5500454427125077,
+  "downward_facing_nonbed_area_mm2_informational": 43.8795558571659,
+  "cradle_stl_sha256": "de044e7ab02c3b9bc340b0ba44f69bdaf2dfa3a91128fa4c9b773aa08dad1375",
+  "cradle_step_sha256": "73e803f6fcaf946d2b992a2f77f4e99c4fd9e4451cc7aba1c798817b2abf86f4",
+  "cradle_coupon_stl_sha256": "5cdee65110416c974eef3249733fc8b09f41238397d151217446ac2b8aecbea6"
+}

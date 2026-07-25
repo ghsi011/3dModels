@@ -1,0 +1,21 @@
+{
+  "bed_contact_area_mm2": 8235.250095468262,
+  "bed_tolerance_mm": 0.05,
+  "bed_z_mm": 0.0,
+  "disposition": "SUPPORT_ALLOWED",
+  "downward_normal_z_max": -0.70710678,
+  "kind": "downward-facing-surface-screen",
+  "matrix_sha256": "473e020da9f9843de6a7226b8ba362432e2b536e31e5407c91c01524c0f12a2a",
+  "max_out_of_limit_area_mm2": 250.0,
+  "note": "Conservative downward-facing-surface orientation screen; does NOT prove slicer supportability, bridgeability, or print success.",
+  "out_of_limit_area_mm2": 43.8795558571659,
+  "out_of_limit_faces": 22946,
+  "plan_checks_sha256": "9a712617823362e0b92f41ced3fb9e22d619521dcffb70799061e239750a8214",
+  "result": "PASS",
+  "rule_id": "S-01",
+  "schema_version": 4,
+  "stl_path": "cradle.stl",
+  "stl_sha256": "de044e7ab02c3b9bc340b0ba44f69bdaf2dfa3a91128fa4c9b773aa08dad1375",
+  "tool": "team_preflight.py",
+  "tool_version": "1.0"
+}

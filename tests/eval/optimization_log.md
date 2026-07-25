@@ -120,6 +120,26 @@ Backend: CadQuery exercised (real-part loop); build123d validated (round-5); Fre
 - Design step ④ remains the hardest; the *fit* is now right, but support handling + tool fidelity
   need the Sprint 1 fixes (finiteness incl. `float(None)`, per-rule honesty, 45° threshold).
 
+## Garmin ④ — Dock design (post-Sprint/H-03) — NOT_READY, but design logic strong
+Cost ~89 min, 628k tokens, 290 tools. Blind (dock 3MF held out).
+- **Support-fix + H-03 both worked at the geometry level:** bounded support confined to the lip's
+  nonfunctional face (43.88/250 mm², PASS); seat fit **in-band** (52.0–52.4 for Ø51.75); and the
+  retention lip correctly modeled as an **intended interference** (37.9 mm³ at-lip vs 0 mm³ general)
+  — collision-vs-intended-contact distinguished, the exact review-C-05 capability. team_tools
+  manifest validate PASS.
+- **Only defect (NOT_READY): E-03** — an OCC fillet that would not compute at any radius; shipped
+  sharp. Same class as Pixel ④'s corner-fillet conflicts.
+- Scored vs real 3MF: fit/support/retention correct, but **over-sized** (100×99.5 / 163 cm³ vs
+  74.7×65.4 / 98 cm³) — partly because it enlarged the base to route around the failing fillet.
+
+## Design-step optimization #1 — fillet/OCC robustness (evidence: Garmin E-03 + Pixel corners)
+Recurring design-step failure = a fillet OCC won't compute at any radius (lip/thin/post-boolean
+edges). Added a **general fallback ladder** to `cadquery-patterns.md`: fillet-before-boolean →
+one-edge-at-a-time + smaller radius → **substitute a chamfer** (OCC-robust, equal hand-feel) →
+last resort **declare `allowed_sharp` with a reason** (never an undeclared sharp edge). This also
+attacks the bulk (don't distort the part to dodge a fillet). Multi-part evidenced, general
+principle; **validate on the next design run.** Broom ② = clean Ø30 reference (trivial).
+
 ## Garmin ① — Metrology (cross-part validation) — DONE, PASS + fixes PROMOTED
 Cost ~13.6 min, 201,234 tokens, 46 tools. Blind (photos+calipers+specs; dock 3MF held out —
 result-divergence confirms: it produced 51.75 mm, not the dock's seat number).

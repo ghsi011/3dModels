@@ -42,8 +42,21 @@ print("volume", body.val().Volume(), "bbox", body.val().BoundingBox().xlen)
 ```
 
 - Bottom of the part at Z=0 in print orientation (`centered=(True, True, False)`).
-- Booleans: `.cut()`, `.union()`, `.intersect()`. Chain fillets AFTER shell/booleans,
-  largest radius first; a failing fillet usually means the radius ≥ local wall.
+- Booleans: `.cut()`, `.union()`, `.intersect()`.
+- **Fillet/chamfer robustness** (recurring OCC failure: a fillet that will not compute at *any*
+  radius — usually on a lip, thin, lofted, or post-boolean edge). Work this ladder before giving
+  up, rather than looping on radii:
+  1. Fillet on the **primitive, before** the boolean/union — not on the merged edge afterward
+     (largest radius first). Most "won't-compute" fillets succeed when applied earlier in the tree.
+  2. Reduce the radius (a fillet ≥ local wall/feature always fails) and select **one edge at a
+     time** — a batch `edges(...)` selector fails the whole operation if any single edge is fragile.
+  3. **Substitute a chamfer.** Chamfers are far more OCC-robust than fillets and satisfy an
+     exposed-edge comfort requirement just as well (a 0.6 mm chamfer breaks an edge for hand-feel
+     as well as a 0.6 mm fillet). Prefer this over shipping the edge sharp, and over distorting
+     the part to route around the fillet.
+  4. Last resort: ship the edge **sharp but DECLARE it `allowed_sharp` with a feature-specific
+     reason** in the plan's edge set — never leave an *undeclared* sharp edge, which silently
+     fails the gate (that is a NOT_READY, not a delivery).
 - OCC pitfalls (observed): fillet/chamfer on scalloped/periodic-spline edges can silently
   corrupt the solid — assert `isValid()` AND a sane volume delta after every
   fillet/chamfer/boolean; if one corrupts, replace it with a revolved or wedge cut.
