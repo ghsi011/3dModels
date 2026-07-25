@@ -3,38 +3,41 @@
 Guidance for AI agents working in this folder. (`CLAUDE.md` points here; this file is the
 single source of truth.)
 
-## The skill
+This repo tracks **my own 3D models and prints** — one folder per project. It is not where the
+modeling skill is developed.
 
-- **Use the `3d-modeling` skill** for any modeling or print-prep work here. A copy lives in
-  this repo at [`skills/3d-modeling/`](skills/3d-modeling/) (browsable) and
-  [`skills/3d-modeling.skill`](skills/3d-modeling.skill) (installable bundle). It supersedes
-  the older single-backend `3d-freecad` / `3d-cadquery` skills.
-- It supports **two backends** — pick per part in the skill's Phase 0:
-  - **FreeCAD** (via the FreeCAD MCP on this machine): parametric `.FCStd` you can open and
-    edit; best design-quality; needs the desktop + FreeCAD + MCP addon running.
-  - **CadQuery** (code-first, runs in the cloud container): a parametric `model.py`; no
-    desktop dependency; cheap fast iteration. Use when the bridge/FreeCAD is offline.
-- **Never export a fit-critical part without the skill's Phase 4 checks** (all seven):
-  interference, insertion sweep over full travel, section render, **visual side-by-side vs
-  the photos/reference**, **feature positions measured from named datums**, measurement
-  audit, printability + face audit — all run on the **exported STL re-imported**, not the
-  in-memory model.
+## Modeling skill
+
+The `3d-modeling` skill (solo + the five-role team pipeline, the deterministic gates, and the
+CAD tooling) lives in its own repository: **https://github.com/ghsi011/3d-modeling-skill**.
+Install it from there; it is no longer vendored in this repo.
+
+Use it for modeling and print-prep work here, and do not skip its verification checks:
+
+- **Never export a fit-critical part without the skill's Phase 4 checks** (all seven:
+  interference, insertion sweep over full travel, section render, visual side-by-side vs the
+  photos/reference, feature positions measured from named datums, measurement audit,
+  printability + face audit) — all run on the **exported STL re-imported**, not the in-memory
+  model.
 - **Before finalizing STL and before slicing, run the pre-print validation checklist**
-  (`skills/3d-modeling/references/preflight-checklist.md`): DFAM/adhesion/overhang geometry,
-  material calibration, and the exact final-3MF settings. It exists because CAD-clean parts
-  still fail on the plate — see the PETG-CF knock-off case in
-  `skills/3d-modeling/references/troubleshooting.md`.
-- **Recreating a part from photos**: use the render-over-photo overlay loop
-  (`skills/3d-modeling/references/cadquery-patterns.md`) — draw the model's boundaries on the
-  photo and iterate. Overlays catch millimetre errors that side-by-side viewing misses.
+  (DFAM/adhesion/overhang geometry, material calibration, exact final-3MF settings). It exists
+  because CAD-clean parts still fail on the plate.
+- **Recreating a part from photos**: use the render-over-photo overlay loop — draw the model's
+  boundaries on the photo and iterate. Overlays catch millimetre errors that side-by-side
+  viewing misses.
 - **Known products** (phone, battery, SBC, appliance part): web-search the official specs and
   look for existing 3D models before measuring — then still confirm with photos + calipers.
 
+Passing a software gate is necessary evidence, not proof of functional correctness. A gate can
+tell you a contract is well-formed and a measured predicate holds under a stated transform; it
+cannot tell you a part will fit, print, or survive its load.
+
 ## Printer
 
-- **Bambu Lab X2D Combo** (dual nozzle, AMS 2 Pro, heated chamber). Full profile with quirks
-  and recipes: `skills/3d-modeling/references/printers.md`. Key: model/TPU/CF on main nozzle,
-  second colour/support on auxiliary; dual-nozzle jobs shrink build volume to 235.5×256×256.
+- **Bambu Lab X2D Combo** (dual nozzle, AMS 2 Pro, heated chamber). Key: model/TPU/CF on main
+  nozzle, second colour/support on auxiliary; dual-nozzle jobs shrink the build volume to
+  235.5×256×256. Full profile with quirks and recipes lives in the skill repo
+  (`references/printers.md`).
 
 ## Workflow rules
 
@@ -56,12 +59,5 @@ single source of truth.)
 - Parts often live in a car interior (Israeli summer): default to **ASA/PETG, never PLA** for
   final parts. PLA is for fit-test coupons only.
 - FreeCAD runs on this machine and is reachable via the FreeCAD MCP when the desktop bridge is
-  connected; files export directly into these folders. When it's offline, use the CadQuery
-  backend in the cloud and deliver the files back here.
-
-## Learning / experiments
-
-The `experiments/` folder holds a benchmarked comparison of the two backends vs an unassisted
-control, plus the verification methodology (`verification_postmortem.md`, `verify_visual.py`,
-`overlay_photo.py`) that the skill's Phase 4 is built on. Read `experiments/experiment_report.md`
-for why the checks exist — most were added after a real miss.
+  connected; files export directly into these folders. When it's offline, use a code-first
+  backend (CadQuery/build123d) and deliver the files back here.
