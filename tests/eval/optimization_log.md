@@ -219,3 +219,33 @@ absent from `installed_plugins.json`, the plugin cache, `~/.claude/skills/`, set
 separate `parametric-3d-printing` user skill remains, different name/purpose.) Still open for real
 deployment: the *optimized repo skill* is not itself registered/invocable — `/3d-modeling` has no
 target now; the repo version must be installed as the registered skill when optimization is done.
+
+---
+
+## 2026-07-25 — designer_toolkit A/B (agentic→code speedup, measured)
+
+Controlled single-variable micro-benchmark. Identical CANDIDATE commission (wall
+bracket, Ø12.9 rod sliding-fit bore, support-free) given to two fresh 3d-designer
+subagents (both Opus). Only variable: **Arm A calls `designer_toolkit`** for all
+Phase-4 evidence; **Arm B hand-authors** the same checks from `cadquery-patterns.md`
+(the pre-toolkit baseline). Same contracts, same seated `ref.stl`, same gates.
+
+| metric | Arm A (toolkit) | Arm B (hand-authored) | delta |
+|---|---|---|---|
+| tool-uses | 39 | 56 | −30% |
+| wall-clock | 631.7 s (10.5 min) | 906.7 s (15.1 min) | −30% |
+| tokens | 120,405 | 128,816 | −6.5% |
+| outcome | READY, correct | READY, correct | tie |
+| bore Ø (band 13.10–13.40) | 13.20 | 13.248 | both in-band |
+| seated interference / sweep / overhang | 0 / 0 / 0 | 0 / 0 / 0 | tie |
+
+Both PASS `team_preflight support-audit` (identity transform, 0 out-of-limit area).
+Arm A used exactly-45° bed chamfer (normal_z ≈ −0.707, clears the −0.73 screen —
+validates that spec fix); Arm B chose a steeper-than-45° chamfer — both valid.
+
+**Read:** the toolkit removes ~30% of the design-step tool-uses and wall-clock at
+equal correctness. Caveats: N=1 per arm (direction, not a CI); micro-benchmark
+amplifies the Phase-4 fraction — on a hard part the geometry/judgment time (which
+the toolkit does NOT touch) dilutes the %, so 30% is a conservative Phase-4-local
+win, not a whole-pipeline figure. The baseline is already assisted by the patterns
+doc, making this a *conservative* comparison. Next: confirm on one real part.
