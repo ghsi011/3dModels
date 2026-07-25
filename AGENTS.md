@@ -3,89 +3,41 @@
 Guidance for AI agents working in this folder. (`CLAUDE.md` points here; this file is the
 single source of truth.)
 
-## Modeling entry points
+This repo tracks **my own 3D models and prints** — one folder per project. It is not where the
+modeling skill is developed.
 
-- Start every modeling or print-prep request by loading **`3d-orchestrator`**. It owns the
-  route and records the decision in `job_state.md`.
-- **Solo mode** runs the existing [`skills/3d-modeling/`](skills/3d-modeling/) monolith
-  unchanged. Use it only for a simple, single-part, non-fit-critical job with no recreated
-  mating geometry, no moving/multi-part interfaces, and no high-consequence DFM question.
-- **Team mode** uses the five slices in `skills/3d-orchestrator/`,
-  `skills/3d-metrologist/`, `skills/3d-designer/`, `skills/3d-verifier/`, and
-  `skills/3d-print-engineer/`. Use it when fit or named-datum accuracy matters, geometry is
-  reconstructed from photos, parts mate or move, the job is multi-part/multi-colour, DFM is
-  difficult, failure has safety/thermal/load consequences, or the user asks for independent
-  verification.
-- Invoke solo explicitly with `/3d-modeling`. Invoke the team with `/3d-orchestrator` or
-  “use the 3D team.” For normal new jobs, let the orchestrator decide.
-- Team agents communicate only through project contract files and source evidence, never
-  chat summaries. The required flow, role charters, and design rationale are in
-  [`skills/team-design.md`](skills/team-design.md); the **normative runtime contract and gate
-  schema** is [`skills/3d-modeling/references/team-contracts-v4.md`](skills/3d-modeling/references/team-contracts-v4.md)
-  — where the two disagree, v4 governs. **Team v4 is a guarded pilot** until the frozen
-  adoption regression passes; treat its gate results accordingly.
-- In Claude Code, keep orchestration in the main session or launch
-  `claude --agent 3d-orchestrator`; nested Claude subagents cannot spawn specialists. In
-  Codex, the root agent may dispatch the five slices directly. Runtime model selection is a
-  launcher concern; it does not change the file contracts.
+## Modeling skill
 
-## The solo skill
+The `3d-modeling` skill (solo + the five-role team pipeline, the deterministic gates, and the
+CAD tooling) lives in its own repository: **https://github.com/ghsi011/3d-modeling-skill**.
+Install it from there; it is no longer vendored in this repo.
 
-- **Use the `3d-modeling` skill** for any modeling or print-prep work here. A copy lives in
-  this repo at [`skills/3d-modeling/`](skills/3d-modeling/) (browsable) and
-  [`skills/3d-modeling.skill`](skills/3d-modeling.skill) (installable bundle). It supersedes
-  the older single-backend `3d-freecad` / `3d-cadquery` skills.
-- It supports **two backends** — pick per part in the skill's Phase 0:
-  - **FreeCAD** (via the FreeCAD MCP on this machine): parametric `.FCStd` you can open and
-    edit; best design-quality; needs the desktop + FreeCAD + MCP addon running.
-  - **CadQuery** (code-first, runs in the cloud container): a parametric `model.py`; no
-    desktop dependency; cheap fast iteration. Use when the bridge/FreeCAD is offline.
-- **Never export a fit-critical part without the skill's Phase 4 checks** (all seven):
-  interference, insertion sweep over full travel, section render, **visual side-by-side vs
-  the photos/reference**, **feature positions measured from named datums**, measurement
-  audit, printability + face audit — all run on the **exported STL re-imported**, not the
-  in-memory model.
+Use it for modeling and print-prep work here, and do not skip its verification checks:
+
+- **Never export a fit-critical part without the skill's Phase 4 checks** (all seven:
+  interference, insertion sweep over full travel, section render, visual side-by-side vs the
+  photos/reference, feature positions measured from named datums, measurement audit,
+  printability + face audit) — all run on the **exported STL re-imported**, not the in-memory
+  model.
 - **Before finalizing STL and before slicing, run the pre-print validation checklist**
-  (`skills/3d-modeling/references/preflight-checklist.md`): DFAM/adhesion/overhang geometry,
-  material calibration, and the exact final-3MF settings. It exists because CAD-clean parts
-  still fail on the plate — see the PETG-CF knock-off case in
-  `skills/3d-modeling/references/troubleshooting.md`.
-- **Recreating a part from photos**: use the render-over-photo overlay loop
-  (`skills/3d-modeling/references/cadquery-patterns.md`) — draw the model's boundaries on the
-  photo and iterate. Overlays catch millimetre errors that side-by-side viewing misses.
+  (DFAM/adhesion/overhang geometry, material calibration, exact final-3MF settings). It exists
+  because CAD-clean parts still fail on the plate.
+- **Recreating a part from photos**: use the render-over-photo overlay loop — draw the model's
+  boundaries on the photo and iterate. Overlays catch millimetre errors that side-by-side
+  viewing misses.
 - **Known products** (phone, battery, SBC, appliance part): web-search the official specs and
   look for existing 3D models before measuring — then still confirm with photos + calipers.
 
-## Agent judgment vs software enforcement
-
-Agents own engineering decisions. Deterministic tools enforce contract structure, provenance,
-artifact identity, dependency freshness, resource limits, and repeatable measurements. Passing
-a software gate is necessary evidence, not proof of functional correctness.
-
-Concretely: a deterministic gate (schema/finite-number/hash/revision-binding/path-safety
-check, `team_preflight.py`, etc.) can tell you a contract is well-formed, an artifact matches
-the hash an agent bound to it, and a measured geometric predicate holds under the stated
-transform. It cannot tell you a part will fit, print, or survive its load — that remains an
-agent judgment call, informed by the gate's evidence but never substituted by it.
-
-## Team invariants
-
-- The metrologist owns all numbers and named datums in `dimensions.md`. The designer never
-  silently repairs or replaces ground truth.
-- The mating reference is built blind from `dimensions.md`; the metrologist then overlays it
-  on the photos. If it misses, revise the sheet and rebuild.
-- The print engineer issues `print_plan.md` before candidate design and returns after an
-  independent pass for coupon, slicing, print order, and field testing.
-- The designer and verifier must be different fresh contexts. The verifier must look at
-  renders/overlays and must run all seven Phase-4 checks on the exported STL re-imported.
-- Never run two FreeCAD designers concurrently. CadQuery candidate instances may run in
-  separate folders in parallel.
+Passing a software gate is necessary evidence, not proof of functional correctness. A gate can
+tell you a contract is well-formed and a measured predicate holds under a stated transform; it
+cannot tell you a part will fit, print, or survive its load.
 
 ## Printer
 
-- **Bambu Lab X2D Combo** (dual nozzle, AMS 2 Pro, heated chamber). Full profile with quirks
-  and recipes: `skills/3d-modeling/references/printers.md`. Key: model/TPU/CF on main nozzle,
-  second colour/support on auxiliary; dual-nozzle jobs shrink build volume to 235.5×256×256.
+- **Bambu Lab X2D Combo** (dual nozzle, AMS 2 Pro, heated chamber). Key: model/TPU/CF on main
+  nozzle, second colour/support on auxiliary; dual-nozzle jobs shrink the build volume to
+  235.5×256×256. Full profile with quirks and recipes lives in the skill repo
+  (`references/printers.md`).
 
 ## Workflow rules
 
@@ -107,12 +59,5 @@ agent judgment call, informed by the gate's evidence but never substituted by it
 - Parts often live in a car interior (Israeli summer): default to **ASA/PETG, never PLA** for
   final parts. PLA is for fit-test coupons only.
 - FreeCAD runs on this machine and is reachable via the FreeCAD MCP when the desktop bridge is
-  connected; files export directly into these folders. When it's offline, use the CadQuery
-  backend in the cloud and deliver the files back here.
-
-## Learning / experiments
-
-The `experiments/` folder holds a benchmarked comparison of the two backends vs an unassisted
-control, plus the verification methodology (`verification_postmortem.md`, `verify_visual.py`,
-`overlay_photo.py`) that the skill's Phase 4 is built on. Read `experiments/experiment_report.md`
-for why the checks exist — most were added after a real miss.
+  connected; files export directly into these folders. When it's offline, use a code-first
+  backend (CadQuery/build123d) and deliver the files back here.

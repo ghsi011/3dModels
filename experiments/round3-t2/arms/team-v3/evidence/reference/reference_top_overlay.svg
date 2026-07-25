@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="350" height="105" viewBox="150 300 350 105">
-  <title>Blind reference top-view overlay against participant schematic</title>
-  <image href="../../../common/evidence/fixture_views.svg" x="0" y="0" width="1200" height="800"/>
-  <!-- Re-imported reference bounds mapped at the schematic's governing 5 px/mm scale:
-       X=-31..31, Y=-5.85..5.85 mm => x=170..480, y=321..379.5 px. -->
-  <rect x="170" y="321" width="310" height="58.5" fill="none" stroke="#e11919" stroke-width="3"/>
-</svg>

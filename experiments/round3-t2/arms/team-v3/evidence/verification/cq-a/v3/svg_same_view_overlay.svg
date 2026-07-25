@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="-45 -15 90 30">
-<rect x="-45" y="-15" width="90" height="30" fill="white"/>
-<g transform="scale(1,-1)">
-<rect x="-31" y="-5.85" width="62" height="11.7" fill="none" stroke="#dc7a25" stroke-width="0.32"/>
-<rect x="-31.3" y="-6.15" width="62.6" height="12.3" fill="none" stroke="#1669a8" stroke-width="0.32"/>
-<line x1="-45" y1="0" x2="45" y2="0" stroke="#999" stroke-width="0.10"/><line x1="0" y1="-15" x2="0" y2="15" stroke="#999" stroke-width="0.10"/>
-</g><text x="-43" y="13" font-size="2.2">V3 D0 same-scale overlay: orange F02 62.00×11.70; blue cavity 62.60×12.30; 0.300 mm/side</text>
-</svg>
